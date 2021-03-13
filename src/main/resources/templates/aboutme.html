@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="device-width,initial-scale=1.0">
+    <title>邮箱验证</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <link rel="stylesheet" href="../static/css/mycss.css">
+</head>
+<body>
+<div th:replace="~{common::commonHeader}"></div>
+
+<br>
+<br>
+<br>
+
+<h2 class="ui horizontal divider header"><i class="envelope outline icon"></i>关于我</h2>
+<div class="animated fadeInDown">
+    <div class="ui container">
+        <div class="ui raised center aligned segment">
+            <div class="ui container m-padded-tb-big">
+                <h1 class="ui header">我的个人博客</h1>
+                <p>一个大学小白的练手成果，记录一些笔记和琐事，还将慢慢完善......</p>
+                <p style="font-size: 18px"><i class="fax icon"></i> 我的联系方式</p>
+                <p style="font-size: 15px"><i class="qq icon"></i> QQ: 352696800</p>
+                <p style="font-size: 15px"><i class="weixin icon"></i> WX: AFtlf666</p>
+            </div>
+            <h4 class="ui horizontal divider header"><i class="tag icon"></i>内容统计</h4>
+            <div class="ui statistics">
+                <div class=" statistic">
+                    <div class="value" th:text="${blogNum}"></div>
+                    <div class="label">博文</div>
+                </div>
+                <div class=" statistic">
+                    <div class="value" th:text="${typeNum}"></div>
+                    <div class="label">分类</div>
+                </div>
+                <div class=" statistic">
+                    <div class="value" th:text="${tagNum}"></div>
+                    <div class="label">标签</div>
+                </div>
+            </div>
+            </div>
+    </div>
+
+</div>
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div th:replace="~{common::commonFooter}"></div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script>
+
+    window.onkeydown = function () {
+        if (event.keyCode === 13) {
+            $('#sub-btn').click();
+        }
+    }
+
+    $('.ui.form').form({
+        keyboardShortcuts: false,
+        on: 'blur',
+        inline: true,
+        fields: {
+            pwd: {
+                identifier: 'pwd',
+                rules: [{
+                    type: 'empty',
+                    prompt: '请输入密码',
+                }]
+            },
+            username: {
+                identifier: 'username',
+                rules: [{
+                    type: 'empty',
+                    prompt: '请输入用户名',
+                }]
+            }
+        }
+    })
+
+    $('#sub-btn').click(function () {
+        var validated = $('.ui.form').form('validate form');
+        if (validated) {
+            $.ajax({
+                type: 'post',
+                url: '/toLogin',
+                data: {
+                    'username': $("[name='username']").val(),
+                    'pwd': $("[name='pwd']").val(),
+                },
+                success: function (res) {
+                    if (res.code !== 1000) {
+                        $('#message').text(res.data).css('display', 'block')
+                    } else {
+                        location.href = '/success';
+                    }
+                }
+            })
+        }
+    })
+
+
+</script>
+</body>
+</html>

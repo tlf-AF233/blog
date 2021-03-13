@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="device-width,initial-scale=1.0">
+    <title>注册</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <link rel="stylesheet" href="../static/css/mycss.css">
+</head>
+<body>
+<div th:replace="~{common::commonHeader}"></div>
+
+<br>
+<br>
+<br>
+
+<h2 class="ui horizontal divider header"><i class="envelope outline icon"></i>注册</h2>
+<div class="animated fadeInDown">
+    <div class="ui container">
+        <div class="ui middle aligned center aligned grid">
+            <div class="column">
+                <form id="register-form" class="ui large  form raised segment " method="post" style="display: block; padding: 40px" >
+                <div class="ui stacked segment" >
+                    <div class="inline fields" style="padding: 10px">
+                        <label>用户名：</label>
+                        <div class="eight wide field">
+                                <input type="text" placeholder="用户名" name="username">
+                        </div>
+                    </div>
+                    <div class="inline fields" style="padding: 10px">
+                        <label>昵称：</label>
+                        <div class="eight wide field">
+                                <input type="text" placeholder="昵称" name="nickname">
+                        </div>
+                    </div>
+                    <div class="inline fields" style="padding: 10px">
+                        <label>密码：</label>
+                        <div class="eight wide field">
+                                <input type="password" placeholder="密码" name="pwd">
+                        </div>
+                    </div>
+                    <div class="inline fields" style="padding: 10px">
+                        <label>确认密码：</label>
+                        <div class="eight wide field">
+                                <input type="password" placeholder="确认密码" name="repwd">
+                        </div>
+                    </div>
+                </div>
+                <div class="ui error message"  id="message" style="display: none" ></div>
+                <div class="ui button" id="sub-btn">注册</div>
+                <a href="/login">已有账号？去登录</a>
+            </form>
+                <!-- 以下为注册成功后的邮箱验证界面 -->
+                <div id="email-valid" style="display: none" class="ui raised segment">
+                <div class="ui top attached icon message" style="margin: 20px">
+                    <i class="envelope open icon"></i>
+                    <div class="content">
+                        <div id="user-header" class="header"></div>
+                        <p style="margin: 20px; line-height: 40px">下面请进行邮箱验证:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <br>
+                            填写一个<b>有效的邮箱</b>，点击发送按钮，打开您的邮箱找到我们给您发送的邮件后，点击<b>我们提供的链接</b>即可完成邮箱验证！</p>
+                    </div>
+                </div>
+                    <div class="email ui form fluid attached segment" >
+                        <input type="hidden" name="userId" id="user-id">
+                        <input type="hidden" name="userNickname" id="user-nickname">
+                            <div class="inline fields">
+                                <label>请输入邮箱</label>
+                                <div class="six wide field">
+                                    <input type="email" placeholder="邮箱" name="email">
+                                </div>
+                                <button id="send-btn" class="ui button">发送</button>
+                                <a href="/login">先登录，下次再验证</a>
+                            </div>
+                    </div>
+                    <div class="ui attached warning message" style="margin: 20px">
+                        <i class="icon help"></i>提示
+                        <p>如果没有收到邮件可以点击再次发送</p>
+                    </div>
+                    <div class="ui error message"  id="email-message" style="display: none" ></div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<div th:replace="~{common::commonFooter}"></div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script>
+
+    window.onkeydown = function () {
+        if (event.keyCode === 13) {
+            $('#sub-btn').click();
+        }
+    }
+
+    $('.ui.large.form').form({
+        keyboardShortcuts: false,
+        inline: true,
+        on: 'blur',
+        fields: {
+            pwd: {
+                identifier: 'pwd',
+                rules: [{
+
+                    type: 'empty',
+                    prompt: '请输入密码',
+                }]
+            },
+            username: {
+                identifier: 'username',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '请输入用户名',
+                    },
+                    {
+                        type: 'minLength[5]',
+                        prompt: '请输入至少5个字符',
+                    }
+                ]
+            },
+            repwd: {
+                identifier: 'repwd',
+                rules: [{
+                    type: 'match[pwd]',
+                    prompt: '两次输入密码不一致'
+                }]
+            },
+            nickname: {
+                identifier: 'nickname',
+                rules: [{
+                    type: 'minLength[3]',
+                    prompt: '请输入至少3个字符',
+                }]
+            }
+        }
+    })
+
+    $('.email.ui.form').form({
+        keyboardShortcuts: false,
+        inline: true,
+        fields: {
+            email: {
+                identifier: 'email',
+                rules: [{
+                    type: 'email',
+                    prompt: '请输入正确的邮箱格式',
+                }]
+            },
+        }
+    })
+
+    $('#sub-btn').click(function () {
+        var validated = $('.ui.large.form').form('validate form');
+        if (validated) {
+            $.ajax({
+                type: 'post',
+                url: '/toRegister',
+                data: {
+                    'username': $("[name='username']").val(),
+                    'nickname': $("[name='nickname']").val(),
+                    'pwd': $("[name='pwd']").val(),
+                },
+                success: function (res) {
+                    console.log(res)
+                    if (res.code !== 1000) {
+                        $('#message').text(res.data).css('display', 'block')
+                    } else {
+                        $('#user-header').text(res.data.userNickname + '，恭喜您注册成功！');
+                        $('#user-id').attr('value', res.data.userId);
+                        $('#user-nickname').attr('value', res.data.userNickname);
+                        $('#register-form').css('display', 'none');
+                        $('#email-valid').css('display', 'block');
+                    }
+                }
+            })
+        }
+    })
+
+    $(function () {
+        var btn = $('#send-btn');
+        $(function() {
+            btn.click(function () {
+                var validated = $('.email.ui.form').form('validate form');
+                if (validated) {
+                    setTime()
+                    $.ajax({
+                        type: 'post',
+                        url: '/checkEmail',
+                        data: {
+                            'userId': $("[name='userId']").val(),
+                            'email': $("[name='email']").val(),
+                            'userNickname': $("[name='userNickname']").val(),
+                        },
+                        success: function (res) {
+                            console.log(res)
+                            if (res.code !== 1000) {
+                                $('#email-message').text(res.data).css('display', 'block')
+                            }
+                        }
+                    })
+                }
+            })
+        })
+        var countdown = 60;
+        function setTime() {
+            if (countdown === 0) {
+                btn.removeClass("disabled");
+                btn.text('发送');
+                countdown = 60;
+                return;
+            } else {
+                btn.addClass("disabled");
+                btn.text("重新发送(" + countdown + ")");
+                countdown--;
+            }
+            setTimeout(setTime, 1000)
+        }
+    })
+</script>
+</body>
+</html>

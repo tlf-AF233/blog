@@ -4,4 +4,107 @@
 
 <mapper namespace="com.af.blog.mapper.UserMapper">
 
+    <select id="selectAnUserById" resultType="User">
+        select user_id, user_nickname from myblog.t_user where user_id = #{userId} AND deleted = 0
+    </select>
+
+    <select id="selectAllUsers" resultType="User">
+        select u.user_id, u.user_nickname, u.user_status, u.user_avatar, r.role_name
+        from t_user u, t_role r
+        where u.user_role = r.role_id  AND u.user_name is not null AND deleted = 0
+    </select>
+
+    <select id="selectAnUserDetailById" resultType="User">
+        select u.user_id, u.user_name,u.user_nickname, u.user_email, u.user_status, u.user_avatar, u.create_time,u.update_time, r.role_name
+        from t_user u, t_role r
+        where u.user_role = r.role_id AND u.user_id = #{userId} AND deleted = 0
+    </select>
+
+    <select id="isExist" resultType="int">
+        select ifnull((select 1 from myblog.t_user where user_name = #{userName} AND deleted = 0 limit 1),0)
+    </select>
+
+    <select id="isEmailExist" resultType="int">
+        select ifnull((select 1 from myblog.t_user where user_email = #{userEmail} AND user_status = 1 AND deleted = 0 limit 1),0)
+    </select>
+
+    <select id="selectAnUserByName" resultType="User">
+        select u.user_id, u.user_name,u.user_nickname, u.user_password, u.user_email, u.user_status, u.user_avatar, u.create_time, r.role_name
+        from t_user u, t_role r
+        where u.user_role = r.role_id AND u.user_name = #{userName}
+    </select>
+
+    <insert id="createAnAnonUser" keyProperty="userId" useGeneratedKeys="true" parameterType="User">
+        insert into t_user(user_nickname, user_email, user_avatar, user_role, create_time, update_time)
+        values(#{userNickname}, #{userEmail}, #{userAvatar}, 10, now(), now())
+    </insert>
+
+    <insert id="createAnUser" keyProperty="userId" useGeneratedKeys="true" parameterType="User">
+        insert into t_user(user_name, user_nickname, user_password, user_avatar, user_role, create_time, update_time)
+        values(#{userName}, #{userNickname}, #{userPassword}, #{userAvatar} , 1, now(), now())
+    </insert>
+
+    <update id="checkEmail" parameterType="User">
+        update t_user set user_email = #{userEmail}, user_code = #{userCode}, update_time = now()
+        where user_id = #{userId} AND user_status = 0
+    </update>
+
+    <select id="getActiveCode" resultType="string">
+        select user_code
+        from t_user
+        where user_id = #{userId} AND user_status = 0
+    </select>
+
+    <update id="activeUser" parameterType="int">
+        update  t_user set user_code = null, user_status = 1, update_time = now()
+        where user_id = #{userId}
+    </update>
+
+    <update id="updateUser" parameterType="User">
+        update t_user
+        <set>
+            <if test="userNickname != null">
+                user_nickname = #{userNickname},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="userPassword != null">
+                user_password = #{userPassword},
+            </if>
+            <if test="userEmail != null">
+                user_email = #{userEmail},
+            </if>
+            <if test="userRole != null">
+                user_role = #{userRole},
+            </if>
+            <if test="userAvatar != null">
+                user_avatar = #{userAvatar},
+            </if>
+            update_time = now()
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <select id="checkPassword" resultType="int">
+        select ifnull((select 1 from myblog.t_user where user_id = #{userId} AND user_password = #{oldPwd} AND deleted = 0 limit 1),0)
+    </select>
+
+    <update id="changeUserStatus">
+        update t_user
+        <set>
+            <if test="userStatus == 1">
+                user_status = 0,
+            </if>
+            <if test="userStatus == 0">
+                user_status = 1,
+            </if>
+            update_time = now()
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <update id="deleteUserById" parameterType="int">
+        update t_user set deleted = 1, update_time = now() where user_id = #{userId}
+    </update>
 </mapper>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/animate.css">
+    <link rel="stylesheet" href="/static/css/mycss.css">
+</head>
+<body>
+
+<div th:replace="~{common::commonHeader}"></div>
+
+<div style="padding-top: 80px !important;">
+    <div class="ui container">
+
+        <div class="ui raised segment">
+            <div class="ui secondary pointing menu">
+                <a href="/back/blogs/1" class="item">博客</a>
+                <a href="/back/types/1" class="item">分类</a>
+                <a href="/back/tags/1" class="item">标签</a>
+                <a href="/back/users/1" class="item">用户</a>
+            </div>
+            <div class="tag ui form fluid attached segment" >
+                <div class="inline fields">
+                    <label>添加标签</label>
+                    <div class="six wide field">
+                        <input type="text" placeholder="标签名称" name="tagName">
+                    </div>
+                    <button id="add-btn" class="ui button">提交</button>
+                </div>
+            </div>
+            <div class="ui error message"  id="tag-message" style="display: none" ></div>
+        </div>
+
+        <table class="ui raised selectable celled table">
+            <thead>
+            <tr>
+                <th>编号</th>
+                <th>名称</th>
+                <th>操作</th>
+            </tr>
+            <tr th:each="tag:${tags.list}">
+                <td th:text="${tag.tagId}"></td>
+                <td th:text="${tag.tagName}"></td>
+                <td>
+                    <button class="positive ui button" id="editButton" th:onclick="'javascript:edit('+${tag.tagId}+');'">编辑</button>
+                </td>
+            </tr>
+            </thead>
+        </table>
+
+        <br>
+        <div class="ui bottom raised segment">
+            <div class="ui middle aligned three column grid">
+                <div class="column">
+                    <a th:href="@{'/back/tags/' + ${tags.prePage}}" id="preButton" class="ui mini brown basic button">上一页</a>
+                </div>
+                <div class="center aligned column">
+                    第<span th:text="${tags.pageNum}"></span>页/
+                    共<span th:text="${tags.pages}"></span>页
+                </div>
+                <div class="right aligned column">
+                    <a th:href="@{'/back/tags/' + ${tags.nextPage}}" id="nextButton" class="ui mini brown basic button">下一页</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div th:replace="~{common::commonFooter}"></div>
+
+
+
+<!-- 弹窗 -->
+<div class="ui mini modal">
+    <div class="header">
+            提示
+    </div>
+    <div class="content">
+        <p id="infos"></p>
+    </div>
+    <div class="actions">
+        <div class="ui red deny inverted button">
+            No
+            <i class="remove icon">
+            </i>
+        </div>
+        <div class="ui green ok inverted button">
+            OK
+            <i class="checkmark icon">
+            </i>
+        </div>
+    </div>
+</div>
+
+
+<!-- 编辑 -->
+<div class="ui modal editform">
+    <div class="header">
+        编辑标签
+    </div>
+    <div class="content">
+    <form class="ui edit form">
+        <h4 class="ui dividing header">标签详情</h4>
+        <div class="field">
+            <label>编号</label>
+            <div class="field">
+                <input type="text" name="tagId" class="tag id" readonly />
+            </div>
+        </div>
+        <div class="field">
+            <label>名称</label>
+            <div class="field">
+                <input type="text" name="tagName" class="tag name" />
+            </div>
+        </div>
+    </form>
+    </div>
+    <div class="actions">
+        <button class="ui cancel button">取消</button>
+        <button type="button" id="save-btn" onclick="updateType()" class="ui secondary button">更新</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script>
+
+    $('.type.ui.form').form({
+        keyboardShortcuts: false,
+        inline: true,
+        fields: {
+            tagName: {
+                identifier: 'tagName',
+                rules: [{
+                    type: 'empty',
+                    prompt: '名称不能为空',
+                }]
+            },
+        }
+    })
+    // 添加分类按钮
+    $('#add-btn').click(function () {
+        var validated = $('.tag.ui.form').form("validate form");
+        if (validated) {
+            $.ajax({
+                url: '/back/tag',
+                type: 'post',
+                data: {
+                    'tagName': $('[name="tagName"]').val(),
+                },
+                success: function (res) {
+                    if (res.code !== 1000) {
+                        console.log(res.data)
+                        $('#tag-message').text(res.data).css("display", "block");
+                    } else {
+                        $('#infos').text('添加成功!')
+                        $('.mini.modal').modal({
+                            onApprove: function () {
+                                location.reload()
+                            },
+                            onDeny: function () {
+                                location.reload()
+                            }
+                        })
+                        .modal('show')
+                    }
+                }
+            })
+        }
+    })
+
+
+var oldData;
+
+// 编辑
+function edit (id) {
+    $('.ui.modal.editform')
+    .modal({
+        onShow: function () {
+            $.ajax({
+                url: '/back/tag/'+id,
+                type: 'get',
+                dataType: 'json',
+                success: function (res) {
+
+                    if (res.code === 1000) {
+                        $('.tag.id').attr('value', res.data.tagId)
+                        $('.tag.name').attr('value', res.data.tagName)
+                        // 存储旧数据
+                        oldData = new FormData($('.ui.edit.form')[0])
+                    }
+                }
+            })
+        },
+    })
+    .modal('show')
+}
+
+
+function updateType() {
+    var formdata = new FormData($('.ui.edit.form')[0])
+    var newData = new FormData()
+    // 只存储改动的数据
+    for (let [key, value] of oldData.entries()) {
+        if (formdata.get(key) !== value) {
+            newData.set(key, formdata.get(key))
+        }
+    }
+    newData.set('tagId', formdata.get('tagId'));
+    $.ajax({
+        url: '/back/updateTag',
+        type: 'put',
+        dataType: 'json',
+        data: newData,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if (res.code === 1000) {
+                $('#infos').text('操作成功!')
+                $('.mini.modal').modal({
+                    onApprove: function () {
+                        location.reload()
+                    },
+                    onDeny: function () {
+                        location.reload()
+                    }
+                })
+                .modal('show')
+            } else {
+                $('#infos').text(res.data)
+                $('.mini.modal').modal({
+                    onApprove: function () {
+                        location.reload()
+                    },
+                    onDeny: function () {
+                        location.reload()
+                    }
+                })
+                .modal('show')
+            }
+        }
+    })
+}
+</script>
+
+</body>
+</html>

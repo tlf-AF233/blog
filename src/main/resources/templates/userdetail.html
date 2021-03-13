@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="device-width,initial-scale=1.0">
+    <title>个人详情</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <link rel="stylesheet" href="../static/css/mycss.css">
+</head>
+<body>
+<div th:replace="~{common::commonHeader}"></div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<h2 class="ui horizontal divider header"><i class="settings icon"></i>账户详情</h2>
+<br>
+<div class="animated fadeInDown">
+    <div class="ui container">
+        <div class="ui grid">
+
+                    <div class="four wide column">
+                        <div class="ui vertical fluid tabular menu">
+                            <a class="active item" data-tab="first">账户详情</a>
+                            <a class="item" data-tab="second">昵称</a>
+                            <a class="item" data-tab="third">修改密码</a>
+                            <a class="item" data-tab="forth">邮箱</a>
+                            <a class="item" data-tab="fifth">头像</a>
+                            <a class="item" data-tab="sixth">权限</a>
+                        </div>
+                    </div>
+                        <div class="twelve wide stretched column">
+                            <!-- 账户详情页 -->
+                            <div class="ui active tab raised segment" data-tab="first">
+                                <form class="ui large form">
+                                    <div class="inline fields">
+                                        <label>用户名：</label>
+                                        <div class="eight wide field">
+                                                <input style="border: none" th:value="${user.userName}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="inline fields">
+                                        <label>昵称：</label>
+                                        <div class="eight wide field">
+                                                <input style="border: none" th:value="${user.userNickname}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="inline fields">
+                                        <label>邮箱：</label>
+                                        <div class="five wide field">
+                                            <input style="border: none" th:value="${user.userEmail}" readonly>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui button" th:if="${user.userStatus}==1" th:text="已认证"></div>
+                                            <div class="ui red inverted button" th:unless="${user.userStatus}==1" th:text="未认证"></div>
+                                        </div>
+                                    </div>
+                                    <div class="inline fields">
+                                        <label>入站时间：</label>
+                                        <div class="eight wide field">
+                                            <input style="border: none" th:value="${#dates.format(user.createTime, 'yyyy-MM-dd')}" readonly>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- 修改昵称页 -->
+                            <div class="ui tab raised segment" data-tab="second">
+                                <form class="ui large nickname form" th:if="${user.userStatus} != 0">
+                                    <input type="hidden" name="userId" th:value="${user.userId}">
+                                    <div class="inline fields">
+                                        <label>当前昵称：</label>
+                                        <div class="eight wide field">
+                                            <input type="text" name="nickname" style="border: none" th:value="${user.userNickname}" readonly>
+                                        </div>
+                                    </div>
+                                    <div  class="inline fields">
+                                        <label>新昵称：</label>
+                                        <div class="eight wide field">
+                                            <input type="text" name="userNickname">
+                                        </div>
+                                    </div>
+                                    <div class="ui  message" id="nickname-message" style="display: none"></div>
+                                    <div class="ui blue button" id="nickname-sub">提交</div>
+                                </form>
+                                <div th:unless="${user.userStatus} != 0" class="ui warning message">
+                                    <div class="header">修改昵称请先完成邮箱验证！</div>
+                                </div>
+                            </div>
+
+                            <!-- 修改密码页 -->
+                            <div class="ui tab raised segment" data-tab="third">
+                                <form th:if="${user.userStatus} != 0" class="ui large password form">
+                                <input type="hidden" name="userId" th:value="${user.userId}">
+                                <div class="inline fields">
+                                    <label>请输入旧密码：</label>
+                                    <div class="eight wide field">
+                                        <input type="password" name="oldPwd">
+                                    </div>
+                                </div>
+                                <div class="inline fields">
+                                    <label>请输入新密码：</label>
+                                    <div class="eight wide field">
+                                        <input type="password" name="newPwd">
+                                    </div>
+                                </div>
+                                    <div class="inline fields">
+                                        <label>请再次输入新密码：</label>
+                                        <div class="eight wide field">
+                                            <input type="password" name="rePwd">
+                                        </div>
+                                    </div>
+                                <div class="ui message" id="password-message" style="display: none"></div>
+                                <div class="ui blue button" id="password-sub">提交</div>
+                            </form>
+                                <div th:unless="${user.userStatus} != 0" class="ui warning message">
+                                    <div class="header">修改密码请先完成邮箱验证！</div>
+                                </div>
+                            </div>
+
+                            <!-- 修改邮箱页 -->
+                            <div class="ui tab raised segment" data-tab="forth">
+                                <div th:if="${user.userStatus} == 0">
+                                    <div class="email ui form segment" >
+                                        <input type="hidden" name="userId" th:value="${user.userId}">
+                                        <input type="hidden" name="userNickname" th:value="${user.userNickname}">
+                                        <div class="inline fields">
+                                            <label>请输入邮箱</label>
+                                            <div class="six wide field">
+                                                <input type="text" placeholder="邮箱" name="email">
+                                            </div>
+                                            <button id="send-btn" class="ui button">发送</button>
+                                        </div>
+                                    </div>
+                                    <div class="ui attached warning message" style="margin: 20px">
+                                        <i class="icon help"></i>提示
+                                        <p>如果没有收到邮件可以点击再次发送</p>
+                                    </div>
+                                    <div class="ui error message"  id="email-message" style="display: none" ></div>
+                                </div>
+
+                                <form class="ui large form" th:unless="${user.userStatus} == 0">
+                                    <div class="inline fields">
+                                        <label>邮箱：</label>
+                                        <div class="five wide field">
+                                            <input style="border: none" th:value="${user.userEmail}" readonly>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui button" >已认证</div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- 修改头像页 -->
+                            <div class="ui tab raised segment" data-tab="fifth">
+                                <img style="width: 200px;height: 200px;border-radius: 200px" th:src="'/images/' + ${user.userAvatar}" alt="">
+                                <form th:if="${user.userStatus} != 0" id="avatar-form"  method="post" class="ui form" enctype="multipart/form-data">
+                                    <input type="hidden" name="userId" th:value="${user.userId}" >
+                                    <input id="upload-file" type="file" name="file" style="border: none">
+                                    <button type="button" onclick="uploadFile()" class="ui blue button">提交</button>
+                                    <div class="ui message" id="avatar-message" style="display: none"></div>
+                                </form>
+                                <div th:unless="${user.userStatus} != 0" class="ui warning message">
+                                    <div class="header">修改头像请先完成邮箱验证！</div>
+                                </div>
+                            </div>
+
+                            <!-- 查看权限页 -->
+                            <div class="ui tab raised segment" data-tab="sixth">
+                                <form class="ui large form">
+                                    <div class="inline fields">
+                                        <label>您当前所在权限：</label>
+                                        <div class="eight wide field">
+                                            <input type="text" name="nickname" style="border: none" th:value="${user.roleName}" readonly>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div th:replace="~{common::commonFooter}"></div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script>
+
+    $('.tabular.menu .item').tab()
+
+    window.onkeydown = function () {
+        if (event.keyCode === 13) {
+            $('#sub-btn').click();
+        }
+    }
+
+    // 修改昵称表单验证
+    $('.ui.large.nickname.form').form({
+        keyboardShortcuts: false,
+        inline: true,
+        on: 'blur',
+        fields: {
+            userNickname: {
+                identifier: 'userNickname',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '请输入昵称',
+                    },
+                    {
+                        type: 'different[nickname]',
+                        prompt: '不能与当前昵称相同',
+                    },
+                    {
+                        type: 'minLength[3]',
+                        prompt: '请输入至少3个字符',
+                    }
+                ]
+            }
+        }
+    })
+
+    // 修改密码表单验证
+    $('.ui.large.password.form').form({
+        keyboardShortcuts: false,
+        inline: true,
+        on: 'blur',
+        fields: {
+            oldPwd: {
+                identifier: 'oldPwd',
+                rules: [{
+                    type: 'empty',
+                    prompt: '请输入旧密码',
+                }]
+            },
+            newPwd: {
+                identifier: 'newPwd',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '请输入新密码',
+                    },
+                    {
+                        type: 'different[oldPwd]',
+                        prompt: '不能与输入的旧密码一致',
+                    }
+                ]
+            },
+            rePwd: {
+                identifier: 'rePwd',
+                rules: [{
+                    type: 'match[newPwd]',
+                    prompt: '两次输入密码不一致'
+                }]
+            },
+        }
+    })
+
+    // 邮箱验证表单
+    $('.email.ui.form').form({
+        keyboardShortcuts: false,
+        inline: true,
+        fields: {
+            email: {
+                identifier: 'email',
+                rules: [{
+                    type: 'email',
+                    prompt: '请输入正确的邮箱格式',
+                }]
+            },
+        }
+    })
+
+    // 修改昵称 ajax
+    $('#nickname-sub').click(function () {
+        var validated = $('.ui.large.nickname.form').form('validate form');
+        if (validated) {
+            var jsonObj = {
+                'userId': $("[name='userId']").val(),
+                'userNickname': $("[name='userNickname']").val(),
+            }
+            $.ajax({
+                type: 'post',
+                url: '/user/update',
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(jsonObj),
+                success: function (res) {
+                    console.log(res)
+                    if (res.code !== 1000) {
+                        $('#nickname-message').addClass('error').text(res.data).css('display', 'block');
+                    } else {
+                        $('#nickname-message').addClass('success').text("修改成功，重新登录即可！").css('display', 'block');
+                    }
+                }
+            })
+        }
+    })
+
+
+    // 修改密码 ajax
+    $('#password-sub').click(function () {
+        var validated = $('.ui.large.password.form').form('validate form');
+        if (validated) {
+            $.ajax({
+                type: 'post',
+                url: '/user/updatePwd',
+                data: {
+                    'userId': $("[name='userId']").val(),
+                    'oldPwd': $("[name='oldPwd']").val(),
+                    'newPwd': $("[name='newPwd']").val(),
+                },
+                success: function (res) {
+                    console.log(res)
+                    if (res.code !== 1000) {
+                        $('#password-message').addClass('error').text(res.data).css('display', 'block');
+                    } else {
+                        $('#password-message').addClass('success').text('修改成功！').css('display', 'block');
+                    }
+                }
+            })
+        }
+    })
+
+    // 邮箱验证发送
+    $(function () {
+        var btn = $('#send-btn');
+        $(function() {
+            btn.click(function () {
+                var validated = $('.email.ui.form').form('validate form');
+                if (validated) {
+                    setTime()
+                    $.ajax({
+                        type: 'post',
+                        url: '/checkEmail',
+                        data: {
+                            'userId': $("[name='userId']").val(),
+                            'email': $("[name='email']").val(),
+                            'userNickname': $("[name='userNickname']").val(),
+                        },
+                        success: function (res) {
+                            console.log(res)
+                            if (res.code !== 1000) {
+                                $('#email-message').text(res.data).css('display', 'block')
+                            }
+                        }
+                    })
+                }
+            })
+        })
+        var countdown = 60;
+        function setTime() {
+            if (countdown === 0) {
+                btn.removeClass("disabled");
+                btn.text('发送');
+                countdown = 60;
+                return;
+            } else {
+                btn.addClass("disabled");
+                btn.text("重新发送(" + countdown + ")");
+                countdown--;
+            }
+            setTimeout(setTime, 1000)
+        }
+    })
+
+    // 上传头像
+    function uploadFile() {
+        var formdata = new FormData($('#avatar-form')[0])
+            $.ajax({
+                url: '/user/avatar',
+                type: 'post',
+                dataType: 'json',
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.code !== 1000) {
+                        $('#avatar-message').addClass('error').text(res.data).css('display', 'block');
+                    } else {
+                        $('#avatar-message').addClass('success').text('上传成功!').css('display', 'block');
+                    }
+                }
+            })
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.af.blog.mapper.CommentMapper">
+
+    <insert id="createComment" parameterType="Comment">
+        insert into t_comment(com_to, com_content, com_from, create_time, parent_com_id)
+        values(#{comTo}, #{comContent}, #{comFrom}, now(), #{parentComId})
+    </insert>
+
+    <insert id="createMessage" parameterType="Comment">
+        insert into t_comment(com_to, com_content, com_from, create_time, parent_com_id)
+        values(-1, #{comContent}, #{comFrom}, now(), #{parentComId})
+    </insert>
+
+    <resultMap id="CommentResultMap" type="Comment">
+        <id column="com_id" property="comId"/>
+        <result column="com_content" property="comContent"/>
+        <result column="user_nickname" property="userNickname"/>
+        <result column="user_avatar" property="userAvatar"/>
+        <result column="user_email" property="userEmail"/>
+        <result column="deleted" property="deleted"/>
+        <result column="role_name" property="roleName"/>
+        <result column="create_time" property="createTime"/>
+        <collection property="childList" ofType="Comment" column="com_id" select="selectCommentByBlogId1"/>
+
+    </resultMap>
+    <select id="selectCommentByBlogId1" resultMap="CommentResultMap">
+        select  c1.com_id,c1.com_content, u1.user_nickname , u2.user_nickname as parentName , u1.user_avatar, u1.user_email, c1.deleted,ro.role_name,c1.create_time,c1.com_from, c1.parent_com_id
+        from t_comment c1, t_comment c2, t_user u1,t_user u2, t_role ro
+        where
+          u1.user_id = c1.com_from AND ro.role_id = u1.user_role AND c1.parent_com_id = #{comId} AND c1.parent_com_id = c2.com_id AND u2.user_id = c2.com_from
+    </select>
+    <select id="selectCommentByBlogId" resultMap="CommentResultMap">
+        select c.com_content, u.user_nickname, ro.role_name, u.user_avatar, u.user_email,c.com_from, c.deleted,c.create_time, c.com_id
+        from t_comment c, t_user u, t_role ro
+        where
+          u.user_id = c.com_from AND ro.role_id = u.user_role AND c.com_to = #{blogId} AND c.parent_com_id is null
+        ORDER BY c.com_id ASC
+    </select>
+
+    <resultMap id="MessageResultMap" type="Comment">
+        <id column="com_id" property="comId"/>
+        <result column="com_content" property="comContent"/>
+        <result column="user_nickname" property="userNickname"/>
+        <result column="user_avatar" property="userAvatar"/>
+        <result column="user_email" property="userEmail"/>
+        <result column="deleted" property="deleted"/>
+        <result column="role_name" property="roleName"/>
+        <result column="create_time" property="createTime"/>
+        <collection property="childList" ofType="Comment" column="com_id" select="selectMessage1"/>
+    </resultMap>
+    <select id="selectMessage1" resultMap="MessageResultMap">
+        select  c1.com_id,c1.com_content, u1.user_nickname , u2.user_nickname as parentName , u1.user_avatar, u1.user_email, c1.deleted,ro.role_name,c1.create_time,c1.com_from, c1.parent_com_id
+        from t_comment c1, t_comment c2, t_user u1,t_user u2, t_role ro
+        where
+          u1.user_id = c1.com_from AND ro.role_id = u1.user_role AND c1.parent_com_id = #{comId} AND c1.parent_com_id = c2.com_id AND u2.user_id = c2.com_from
+    </select>
+    <select id="selectMessage" resultMap="MessageResultMap">
+        select c.com_content, u.user_nickname, ro.role_name, u.user_avatar, u.user_email,c.com_from, c.deleted,c.create_time, c.com_id
+        from t_comment c, t_user u, t_role ro
+        where
+          u.user_id = c.com_from AND ro.role_id = u.user_role AND c.com_to = -1 AND c.parent_com_id is null
+        ORDER BY c.com_id ASC
+    </select>
+
+    <update id="deleteCommentById" parameterType="int">
+        update t_comment set deleted = 1 where com_id = #{commentId}
+    </update>
+</mapper>

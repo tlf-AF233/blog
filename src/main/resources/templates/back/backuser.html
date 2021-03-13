@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/animate.css">
+    <link rel="stylesheet" href="/static/css/mycss.css">
+</head>
+<body>
+
+<div th:replace="~{common::commonHeader}"></div>
+
+<div style="padding-top: 80px !important;">
+    <div class="ui container">
+
+        <div class="ui raised segment">
+            <div class="ui  secondary pointing menu">
+                <a href="/back/blogs/1" class="item">博客</a>
+                <a href="/back/types/1" class="item">分类</a>
+                <a href="/back/tags/1" class="item">标签</a>
+                <a href="/back/users/1" class="item">用户</a>
+            </div>
+        </div>
+
+        <table class="ui raised selectable celled table">
+            <thead>
+            <tr>
+                <th>头像</th>
+                <th>昵称</th>
+                <th>状态</th>
+                <th>角色</th>
+                <th>操作</th>
+            </tr>
+            <tr th:each="user:${users.list}">
+                <td><img th:src="'/images/'+ ${user.userAvatar}" class="ui mini rounded image" alt=""></td>
+                <td th:text="${user.userNickname}"></td>
+                <td th:if="${user.userStatus}==1" class="positive">
+                    <button class="ui positive basic button" th:onclick="'javascript:changeStatus('+${user.userId}+' ,1)'" >已认证</button>
+                </td>
+                <td th:unless="${user.userStatus}==1" class="negative">
+                    <button class="ui negative basic button" th:onclick="'javascript:changeStatus('+${user.userId}+' ,0)'">未认证</button>
+                </td>
+                <td th:if="${user.roleName.equals('站长')}">
+                    <div class="ui red label">站长</div>
+                </td>
+                <td th:unless="${user.roleName.equals('站长')}">
+                    <div class="ui green label" th:text="${user.roleName}"></div>
+                </td>
+                <td>
+                    <button class="positive ui button" id="editButton" th:onclick="'javascript:edit('+${user.userId}+');'">编辑</button>
+                    <button class="negative ui button" id="removeButton" th:onclick="'javascript:deleted('+${user.userId}+');'">删除</button>
+                    <button class="blue ui button" id="detailButton" th:onclick="'javascript:detail('+${user.userId}+');'">查看详情</button>
+                </td>
+            </tr>
+            </thead>
+        </table>
+
+        <br>
+        <div class="ui bottom raised segment">
+            <div class="ui middle aligned three column grid">
+                <div class="column">
+                    <a th:href="@{'/back/users/' + ${users.prePage}}" id="preButton" class="ui mini brown basic button">上一页</a>
+                </div>
+                <div class="center aligned column">
+                    第<span th:text="${users.pageNum}"></span>页/
+                    共<span th:text="${users.pages}"></span>页
+                </div>
+                <div class="right aligned column">
+                    <a th:href="@{'/back/users/' + ${users.nextPage}}" id="nextButton" class="ui mini brown basic button">下一页</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div th:replace="~{common::commonFooter}"></div>
+
+
+
+<!-- 弹窗 -->
+<div class="ui mini modal">
+    <div class="header">
+            提示
+    </div>
+    <div class="content">
+        <p id="infos"></p>
+    </div>
+    <div class="actions">
+        <div class="ui red deny inverted button">
+            No
+            <i class="remove icon">
+            </i>
+        </div>
+        <div class="ui green ok inverted button">
+            OK
+            <i class="checkmark icon">
+            </i>
+        </div>
+    </div>
+</div>
+
+<!-- 查看详情 -->
+<div class="ui modal detailform">
+    <div class="header">
+        查看详情
+    </div>
+    <div class="content">
+        <div class="ui form">
+            <h4 class="ui dividing header">用户详情</h4>
+            <div class="field">
+                <label>用户名</label>
+                <div class="field">
+                    <input type="text" class="user name" readonly/>
+                </div>
+            </div>
+            <div class="field">
+                <label>昵称</label>
+                <div class="field">
+                    <input type="text" class="user nickname" readonly/>
+                </div>
+            </div>
+            <div class="field">
+                <label>邮箱</label>
+                <div class="field">
+                    <input type="text" class="user email" readonly/>
+                </div>
+            </div>
+            <div class="field">
+                <label>角色</label>
+                <div class="field">
+                    <input type="text" class="user role" readonly/>
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>入站时间</label>
+                    <input type="text" class="create time" readonly/>
+                </div>
+                <div class="field">
+                    <label>更新时间</label>
+                    <input type="text" class="update time" readonly/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">取消</div>
+    </div>
+</div>
+
+<!-- 编辑 -->
+<div class="ui modal editform">
+    <div class="header">
+        编辑用户
+    </div>
+    <div class="content">
+    <form class="ui edit form">
+        <h4 class="ui dividing header">用户详情</h4>
+        <div class="field">
+            <label>用户名</label>
+            <div class="field">
+                <input type="text" name="userName" class="user-name" />
+            </div>
+        </div>
+        <div class="field">
+            <label>昵称</label>
+            <div class="field">
+                <input type="text" name="userNickname" class="user-nickname" />
+            </div>
+        </div>
+        <div class="field">
+            <label>邮箱</label>
+            <div class="field">
+                <input type="text" name="userEmail" class="user-email"/>
+            </div>
+        </div>
+        <div class="field">
+            <div class="ui left labeled action input">
+                <label class="ui compact teal basic label">角色</label>
+                <div class="ui fluid selection dropdown">
+                    <!--需要一个隐藏域来保存选中的roleId-->
+                    <input type="hidden" name="roleId" value="当前角色" class="user-role">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">角色</div>
+                    <div class="menu">
+                        <div th:each="role : ${roles}" th:data-value="${role.roleId}" th:text="${role.roleName}" class="item"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    </div>
+    <div class="actions">
+        <button class="ui cancel button">取消</button>
+        <button type="button" id="save-btn" onclick="updateUser()" class="ui secondary button">更新</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script>
+
+
+
+// 删除按钮
+function deleted (id) {
+    $('.ui.mini.modal')
+        .modal({
+            onShow: function () {
+              $('#infos').text('确定要删除吗?')
+            },
+            onApprove: function () {
+                $.ajax({
+                    url: '/back/user/'+id,
+                    type: 'delete',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.code === 1000) {
+                            location.reload()
+                        }
+                    }
+                })
+            },
+    })
+    .modal('show')
+}
+
+// 查看详情
+function detail (id) {
+    $('.ui.modal.detailform')
+        .modal({
+            onShow: function () {
+                $.ajax({
+                    url: '/back/user/'+id,
+                    type: 'get',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.code === 1000) {
+                            $('.user.nickname').attr('value', res.data.userNickname)
+                            $('.user.name').attr('value', res.data.userName)
+                            $('.user.role').attr('value', res.data.roleName)
+                            $('.user.email').attr('value', res.data.userEmail)
+                            $('.create.time').attr('value', timeFormat(res.data.createTime))
+                            $('.update.time').attr('value', timeFormat(res.data.updateTime))
+                        }
+                    }
+                })
+            },
+            onHidden: function () {
+
+            }
+        })
+    .modal('show')
+}
+
+var oldData;
+
+// 编辑
+function edit (id) {
+    $('.ui.modal.editform')
+    .modal({
+        onShow: function () {
+            $.ajax({
+                url: '/back/user/'+id,
+                type: 'get',
+                dataType: 'json',
+                success: function (res) {
+                        console.log(res.data)
+                    if (res.code === 1000) {
+                        $('.user-nickname').attr('value', res.data.userNickname)
+                        $('.user-name').attr('value', res.data.userName)
+                        $('.user-role').attr('value', res.data.roleName)
+                        $('.user-email').attr('value', res.data.userEmail)
+                        // 存储旧数据
+                        oldData = new FormData($('.ui.edit.form')[0])
+                        oldData.set("userId", res.data.userId);
+                    }
+                }
+            })
+        },
+        onHidden: function () {
+            // 清空模态框内容
+            console.log($("input[name='roleId']").val())
+        }
+    })
+    .modal('show')
+}
+
+// 日期格式化
+function timeFormat(time) {
+    var datetime = new Date(time);
+    var year = datetime.getFullYear();
+    var month = datetime.getMonth() + 1 < 10? '0' + (datetime.getMonth() + 1): datetime.getMonth() + 1;
+    var date = datetime.getDate() < 10? '0' + datetime.getDate(): datetime.getDate();
+    var hour = datetime.getHours() < 10? '0' + datetime.getHours(): datetime.getHours();
+    var min = datetime.getMinutes() < 10? '0' + datetime.getMinutes(): datetime.getMinutes();
+    var second = datetime.getSeconds() < 10? '0' + datetime.getSeconds(): datetime.getSeconds();
+    return year + '-' + month + '-' + date + ' ' + hour + ':' + min + ':' + second
+}
+
+function changeStatus(userId, userStatus) {
+    $('.ui.mini.modal')
+    .modal({
+        onShow: function () {
+            $('#infos').text('确定要更改吗?')
+        },
+        onApprove: function () {
+            $.ajax({
+                url: '/back/changeStatus/'+userId+'/'+userStatus,
+                type: 'get',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 1000) {
+                        location.reload()
+                    }
+                }
+            })
+        },
+    })
+    .modal('show')
+}
+
+
+
+function updateUser() {
+    var formdata = new FormData($('.ui.edit.form')[0])
+    var newData = new FormData()
+    // 只存储改动的数据
+    for (let [key, value] of oldData.entries()) {
+        if (formdata.get(key) !== value) {
+            newData.set(key, formdata.get(key))
+        }
+    }
+    newData.set('userId', oldData.get('userId'))
+
+    $.ajax({
+        url: '/back/updateUser',
+        type: 'put',
+        dataType: 'json',
+        data: newData,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if (res.code === 1000) {
+                $('#infos').text('操作成功!')
+                $('.mini.modal').modal({
+                    onApprove: function () {
+                        location.reload()
+                    },
+                    onDeny: function () {
+                        location.reload()
+                    }
+                })
+                .modal('show')
+            }
+        }
+    })
+}
+</script>
+
+</body>
+</html>

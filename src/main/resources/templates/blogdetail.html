@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="device-width,initial-scale=1.0">
+    <title>博客详情</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <link rel="stylesheet" href="../static/css/typo.css">
+    <link rel="stylesheet" href="../static/css/prism.css">
+    <link rel="stylesheet" href="../static/css/mycss.css">
+</head>
+<body>
+<div th:replace="~{common::commonHeader}"></div>
+
+<br>
+<br>
+<br>
+<!--中部主体-->
+<div id="waypoint" class="m-container-small m-padded-tb-big animated fadeIn ">
+    <div class="ui container">
+        <!--文章的图片-->
+        <div class="ui top attached segment">
+            <img th:src="'/images/' + ${blog.blogPicture}" alt="" class="ui fluid rounded image">
+        </div>
+        <!--头部的文章信息部分-->
+        <div class="ui attached segment">
+            <h2 class="ui center aligned header" th:text="${blog.blogTitle}"></h2>
+            <div class="ui stackable middle aligned two column  grid">
+                <div class="row">
+                    <div class="column">
+                        <div class="ui horizontal link list">
+                            <div class="middle aligned item">
+                                <img th:src="'/images/' + ${author.userAvatar}"  alt=""
+                                     class="ui avatar image">
+                                <div class="content" th:text="${author.userNickname}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--文章的内容部分-->
+        <div class="ui  attached padded segment">
+            <!---这里是博客的flag：原创，转载-->
+            <!--<div class="ui right aligned basic segment">-->
+            <!--<div class="ui orange basic label" th:text="${blog.flag}">原创</div>-->
+            <!--</div>-->
+            <!--文章的标题-->
+
+            <br>
+            <!--文章的主要内容-->
+            <div th:utext="${blog.blogContent}"
+                 class="m-padded-tb-large m-padded-lr-responsive typo typo-selection js-toc-content"></div>
+            <!--标签分类-->
+            <div class="m-padded-lr-responsive">
+                <h4 class="ui  header" style="display: inline">分类：</h4><button class="ui circular large label" th:text="${blog.typeName}"></button>
+                <br>
+                <h4 class="ui  header" style="display: inline">标签：</h4><button  th:each="tag : ${blog.tags}" th:text="${tag.tagName}"
+                   class="ui  tag label" style="margin: 10px">tags</button>
+                <h4 class="ui header" style="text-align: right">发表时间：<span th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd HH:mm')}"></span></h4>
+                <h4 class="ui header" style="text-align: right">上次更新：<span th:text="${#dates.format(blog.updateTime, 'yyyy-MM-dd HH:mm')}"></span></h4>
+            </div>
+
+        </div>
+
+        <!--留言部分-->
+        <div class="ui bottom attached segment">
+            <div id="comment-container" class="ui  segment">
+                <div th:fragment="commentList">
+                    <div class="ui threaded comments" style="max-width: 100%;">
+                        <h3 class="ui dividing header">评论</h3>
+                        <div class="comment" th:each="comment : ${comments}">
+
+                            <a class="avatar">
+                                <img th:src="'/images/' + ${comment.userAvatar}">
+                                <!--                                     th:src="@{${comment.ipAddress?.avatar}}">-->
+                            </a>
+                            <div class="content">
+                                <span th:if="${comment.roleName.equals('游客')}" th:text="${comment.userNickname}+${comment.userEmail}+'(游客)'" style="color: #847a7a;"></span>
+                                <span th:if="${comment.roleName.equals('会员')}" th:text="${comment.userNickname}+'(会员)'" style="color: #1f58ce;font-weight: bold"></span>
+                                <span th:if="${comment.roleName.equals('站长')}" th:text="${comment.userNickname}+'(站长)'" style="color: #af0920;font-weight: 900"></span>
+                                <div class="ui mini basic red left pointing label m-padded-mini"
+                                     th:if="${comment.comFrom} == ${author.userId}">作者
+                                </div>
+                                <div class="metadata">
+                                    <span th:text="${#dates.format(comment.createTime,'yyyy-MM-dd HH:mm')}" class="date">Today at 5:42PM</span>
+                                </div>
+                                <div th:text="${comment.comContent}" class="text" th:unless="${comment.deleted}">
+                                    How artistic!
+                                </div>
+                                <div class="text" th:if="${comment.deleted}">
+                                    该评论已被删除！
+                                </div>
+
+                                <div class="actions">
+                                    <a class="reply" data-comment="1" data-commmentnickname="Matt"
+                                       th:attr="data-commentid=${comment.comId},data-commentnickname=${comment.userNickname}"
+                                       onclick="reply(this)">回复</a>
+                                    <shiro:hasRole name="站长">
+                                        <a th:attr="data-commentid=${comment.comId}" onclick="deleteComment(this)">
+                                            <i class="trash alternate icon" style="color: rgba(163,138,148,0.51)"></i>
+                                        </a>
+                                    </shiro:hasRole>
+                                </div>
+                            </div>
+                            <div class="comments" th:if="${#arrays.length(comment.childList)}>0">
+                                <div class="comment" th:each="reply : ${comment.childList}">
+                                    <a class="avatar">
+                                        <img th:src="'/images/' + ${reply.userAvatar}">
+                                        <!--                                             th:src="@{${reply.ipAddress?.avatar}}">-->
+                                    </a>
+                                    <div class="content">
+                                        <div class="author">
+                                            <span th:if="${reply.roleName.equals('游客')}" th:text="${reply.userNickname}+${reply.userEmail}+'(游客)'" style="color: #847a7a; font-weight: normal"></span>
+                                            <span th:if="${reply.roleName.equals('会员')}" th:text="${reply.userNickname}+'(会员)'" style="color: #1f58ce;font-weight: bold"></span>
+                                            <span th:if="${reply.roleName.equals('站长')}" th:text="${reply.userNickname}+'(站长)'" style="color: #af0920;font-weight: 900"></span>
+                                            <div class="ui mini basic red left pointing label m-padded-mini"
+                                                 th:if="${reply.comFrom} == ${author.userId}">作者
+                                            </div>
+                                            &nbsp;<span
+                                                th:text="'@ ' +${reply.parentName}"
+                                                class="m-teal"></span></div>
+
+                                        <div class="metadata">
+                                            <span class="date" th:text="${#dates.format(reply.createTime,'yyyy-MM-dd HH:mm')}" >Today at 5:42PM</span>
+                                        </div>
+                                        <div class="text" th:text="${reply.comContent}" th:unless="${reply.deleted}" >
+                                            How artistic!
+                                        </div>
+                                        <div class="text" th:if="${reply.deleted}" >
+                                            该评论已被删除！
+                                        </div>
+                                        <div class="actions">
+                                            <a class="reply" data-comment="1" data-commmentnickname="Matt"
+                                               th:attr="data-commentid=${reply.comId},data-commentnickname=${reply.userNickname}"
+                                               onclick="reply(this)">回复</a>
+                                            <shiro:hasRole name="站长">
+                                                <a th:attr="data-commentid=${reply.comId}" onclick="deleteComment(this)">
+                                                    <i class="trash alternate icon" style="color: rgba(163,138,148,0.51)"></i>
+                                                </a>
+                                            </shiro:hasRole>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment" th:if="${#arrays.length(comments) <=0}">
+                            还没有人来，快来抢沙发~
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="comment-form" class="ui form">
+                <!--这里使用了一个隐藏域来保存当前博客的id-->
+                <input type="hidden" name="blogId" th:value="${blog.blogId}">
+                <input type="hidden" name="parentCommentId" value="-1">
+                <!--判断是否为匿名用户-->
+                <input type="hidden" name="comFrom"
+                       th:if="${session.loginUser}!=null"
+                       th:value="${session.loginUser.userId}">
+                <input type="hidden" name="comFrom"
+                       th:unless="${session.loginUser}!=null"
+                       th:value="-1">
+                <div class="field">
+                    <textarea name="content" placeholder="请输入评论信息..."></textarea>
+                </div>
+                <div class="fields">
+                    <div class="m-margin-bottom-small m-mobile-wide  field">
+                        <div class="ui m-margin-bottom-small m-mobile-wide left icon input">
+                            <input type="hidden" name="nickname" placeholder="昵称"
+                                   th:if="${session.loginUser}!=null"
+                                   th:value="${session.loginUser.userNickname}">
+                                <i class="user icon" th:unless="${session.loginUser}!=null"></i>
+                            <input type="text" name="nickname" placeholder="昵称"
+                                   th:unless="${session.loginUser}!=null"
+                                   th:value="匿名用户">
+                        </div>
+                    </div>
+                    <div class="m-margin-bottom-small m-mobile-wide  field">
+                        <div class="ui m-margin-bottom-small m-mobile-wide  left icon input">
+                            <input type="hidden" name="email" placeholder="邮箱"
+                                   th:if="${session.loginUser}!=null"
+                                   th:value="${session.loginUser.userEmail}">
+                            <i class="envelope square icon" th:unless="${session.loginUser}!=null"></i>
+                            <input type="text" name="email" placeholder="邮箱"
+                                   th:unless="${session.loginUser}!=null"
+                                   th:value="xxx+'@'+xxx.com">
+                        </div>
+                    </div>
+                    <div class=" m-margin-bottom-small m-mobile-wide  filed">
+                        <button type="button" id="commentpost-btn"
+                                class="ui m-margin-bottom-small m-mobile-wide  teal button"><i class="edit icon"></i>发布
+                        </button>
+                        <button type="button" id="clear-btn" class="ui m-margin-bottom-small m-mobile-wide grey button">
+                            <i class="edit icon"></i>清除
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- 弹窗 -->
+<div class="ui small anon modal">
+    <div class="header">
+        提示
+    </div>
+    <div class="content">
+        <p>您确定以游客身份发表评论吗？</p>
+    </div>
+    <div class="actions">
+        <div class="ui cancel  button">
+            取消
+            <i class="remove icon">
+            </i>
+        </div>
+        <button id="login-btn" class="ui blue inverted button">
+            不，去登录
+            <i class="arrow circle right icon">
+            </i>
+        </button>
+        <div class="ui green ok inverted button">
+            是的
+            <i class="checkmark icon">
+            </i>
+        </div>
+    </div>
+</div>
+
+<!-- 弹窗 -->
+<div class="ui mini info modal">
+    <div class="header">
+        提示
+    </div>
+    <div class="content">
+        <p id="info">评论成功！谢谢您的建议！</p>
+    </div>
+    <div class="actions">
+        <div class="ui green ok inverted button">
+            OK
+            <i class="checkmark icon">
+            </i>
+        </div>
+    </div>
+</div>
+
+
+<!-- 弹窗 -->
+<div class="ui mini delete modal">
+    <div class="header">
+        提示
+    </div>
+    <div class="content">
+        <p id="infos">确定要删除吗？</p>
+    </div>
+    <div class="actions">
+        <div class="ui red deny inverted button">
+            No
+            <i class="remove icon">
+            </i>
+        </div>
+        <div class="ui green ok inverted button">
+            OK
+            <i class="checkmark icon">
+            </i>
+        </div>
+    </div>
+</div>
+
+
+<div th:replace="~{common::commonFooter}"></div>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.scrollto@2.1.2/jquery.scrollTo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="../static/js/prism.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script th:inline="javascript">
+
+    $('.ui.form').form({
+        fields: {
+            content: {
+                identifier: 'content',
+                rules: [{
+                    type: 'empty',
+                    prompt: '请输入评论内容',
+                }]
+            }
+        }
+    })
+
+    // 提交评论
+    $('#commentpost-btn').click(function () {
+        var validated = $('.ui.form').form('validate form');
+        if (validated) {
+            if (parseInt($("[name='comFrom']").val()) === -1) {
+                $('.anon.modal')
+                    .modal({
+                        onApprove: function () {
+                            postData()
+                        },
+                    })
+                .modal('show');
+            } else {
+                postData()
+            }
+        }
+    })
+
+    // 提交评论
+    function postData() {
+        // 局部刷新评论列表
+        $('#comment-container').load(/*[[@{/comments}]]*/"", {
+            "comTo": $("[name='blogId']").val(),
+            "parentCommentId": $("[name='parentCommentId']").val(),
+            "content": $("[name='content']").val(),
+            "nickname": $("[name='nickname']").val(),
+            "email": $("[name='email']").val(),
+            "comFrom": $("[name='comFrom']").val(),
+        }, function () {
+            $('.ui.mini.info.modal').modal('show');
+            $(window).scrollTo($('#comment-container'), 500)
+            clearContent();
+        })
+    }
+
+    // 清除评论
+    $('#clear-btn').click(function () {
+        clearContent();
+    })
+
+    function clearContent() {
+        $("[name='content']").val("");
+        $("[name='parentCommentId']").val(-1);
+        $("[name='content']").attr("placeholder", "请输入评论信息...");
+    }
+
+    function reply(obj) {
+        var commentId = $(obj).data('commentid');
+        var commentNickname = $(obj).data('commentnickname');
+        // 回复内容 加上@xxx
+        $("[name='content']").attr("placeholder", "@"+commentNickname).focus();
+        // 隐藏域 将id赋值回复的评论id
+        $("[name='parentCommentId']").val(commentId);
+        $(window).scrollTo($('#comment-form'), 500)
+    }
+
+    $('#login-btn').click(function () {
+        location.href = '/login';
+    })
+
+    function deleteComment(obj) {
+        var commentId = $(obj).data('commentid');
+        $(".ui.mini.delete.modal")
+        .modal({
+            onApprove: function () {
+                $.ajax({
+                    type: 'delete',
+                    url: '/back/comment',
+                    data: {
+                        'commentId': commentId,
+                    },
+                    success: function (res) {
+                        if (res.code === 1000) {
+                            location.reload();
+                        }
+                    }
+                })
+            },
+        }).modal('show')
+    }
+</script>
+</body>
+</html>

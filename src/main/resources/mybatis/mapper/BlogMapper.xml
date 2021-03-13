@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.af.blog.mapper.BlogMapper">
+
+    <insert id="createBlog" keyProperty="blogId" useGeneratedKeys="true" parameterType="Blog">
+        insert into myblog.t_blog(blog_title, blog_content, blog_author, blog_type, blog_publish, blog_picture, blog_description, create_time, update_time)
+        values(#{blogTitle}, #{blogContent}, #{blogAuthor}, #{blogType}, #{blogPublish}, #{blogPicture}, #{blogDescription}, now(), now())
+    </insert>
+
+    <update id="updateBlog" parameterType="Blog">
+        update  t_blog
+        <set>
+            <if test="blogTitle != null">
+                blog_title = #{blogTitle},
+            </if>
+            <if test="blogDescription != null">
+                blog_description = #{blogDescription},
+            </if>
+            <if test="blogType != null">
+                blog_type = #{blogType},
+            </if>
+            <if test="blogContent != null">
+                blog_content = #{blogContent},
+            </if>
+            <if test="blogPicture != null">
+                blog_picture = #{blogPicture},
+            </if>
+            update_time = now()
+        </set>
+        where blog_id = #{blogId}
+    </update>
+
+    <update id="changeBlogPublish">
+        update t_blog
+        <set>
+            <if test="blogPublish == 1">
+                blog_publish = 0,
+            </if>
+            <if test="blogPublish == 0">
+                blog_publish = 1,
+            </if>
+            update_time = now()
+        </set>
+        where blog_id = #{blogId}
+    </update>
+
+    <select id="selectCounts" resultType="int">
+        select count(*) from t_blog where deleted = 0
+    </select>
+</mapper>

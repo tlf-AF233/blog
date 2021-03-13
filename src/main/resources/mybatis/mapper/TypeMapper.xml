@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.af.blog.mapper.TypeMapper">
+
+    <select id="selectAllTypes" resultType="Type">
+        select type_id, type_name from myblog.t_type
+    </select>
+
+    <select id="selectTypeById" resultType="Type">
+        select type_id, type_name from myblog.t_type where type_id = #{typeId}
+    </select>
+
+    <select id="isExist" resultType="int">
+        select ifnull((select 1 from myblog.t_type where type_name = #{typeName} limit 1),0)
+    </select>
+
+    <insert id="createType" parameterType="string">
+        insert into t_type (type_name) values(#{typeName})
+    </insert>
+
+    <update id="updateTypeById" parameterType="Type">
+        update t_type
+        <set>
+            <if test="typeName != null">
+                type_name = #{typeName}
+            </if>
+        </set>
+        where type_id = #{typeId}
+    </update>
+
+    <select id="selectCounts" resultType="int">
+        select count(*) from t_type
+    </select>
+</mapper>

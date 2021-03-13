@@ -2,6 +2,7 @@ package com.af.blog.entity;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 /**
  * 用户表
  */
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +26,11 @@ public class User {
      * 用户名
      */
     private String userName;
+
+    /**
+     * 用户昵称
+     */
+    private String userNickname;
 
     /**
      * 密码
@@ -50,6 +57,8 @@ public class User {
      */
     private Integer userRole;
 
+    private String roleName;
+
     /**
      * 头像
      */
@@ -65,4 +74,5 @@ public class User {
      */
     private Date updateTime;
 
+    private Integer deleted;
 }

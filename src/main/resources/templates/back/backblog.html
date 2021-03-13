@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/animate.css">
+    <link rel="stylesheet" href="/static/css/mycss.css">
+</head>
+<body>
+
+<div th:replace="~{common::commonHeader}"></div>
+
+<div style="padding-top: 80px !important;">
+    <div class="ui container">
+
+        <div class="ui raised segment">
+            <div class="ui  secondary pointing menu">
+                <a href="/back/blogs/1" class="item">博客</a>
+                <a href="/back/types/1" class="item">分类</a>
+                <a href="/back/tags/1" class="item">标签</a>
+                <a href="/back/users/1" class="item">用户</a>
+            </div>
+        </div>
+
+        <table class="ui raised selectable celled table">
+            <thead>
+            <tr>
+                <th>标题</th>
+                <th>分类</th>
+                <th>标签</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            <tr th:each="blog:${blogs.list}">
+                <td th:text="${blog.blogTitle}"></td>
+                <td th:text="${blog.typeName}"></td>
+                <td>
+                    <button class="ui button" th:each="tag:${blog.tags}" th:text="${tag.tagName}"></button>
+                </td>
+                <td th:if="${blog.blogPublish}==1" class="positive">
+                    <button class="ui positive basic button" th:onclick="'javascript:changePublish('+${blog.blogId}+' ,1)'" >发布</button>
+                </td>
+                <td th:unless="${blog.blogPublish}==1" class="negative">
+                    <button class="ui negative basic button" th:onclick="'javascript:changePublish('+${blog.blogId}+' ,0)'">草稿</button>
+                </td>
+                <td>
+                    <a th:href="@{'/back/edit/' + ${blog.blogId}}" class="positive ui button">编辑</a>
+                    <button class="negative ui button" id="removeButton" th:onclick="'javascript:deleted('+${blog.blogId}+');'">删除</button>
+                    <button class="blue ui button" id="detailButton" th:onclick="'javascript:detail('+${blog.blogId}+');'">查看详情</button>
+                </td>
+            </tr>
+            </thead>
+        </table>
+
+        <br>
+        <div class="ui bottom raised segment">
+            <div class="ui middle aligned three column grid">
+                <div class="column">
+                    <a th:href="@{'/back/blogs/' + ${blogs.prePage}}" id="preButton" class="ui mini brown basic button">上一页</a>
+                </div>
+                <div class="center aligned column">
+                    第<span th:text="${blogs.pageNum}"></span>页/
+                    共<span th:text="${blogs.pages}"></span>页
+                </div>
+                <div class="right aligned column">
+                    <a th:href="@{'/back/blogs/' + ${blogs.nextPage}}" id="nextButton" class="ui mini brown basic button">下一页</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div th:replace="~{common::commonFooter}"></div>
+
+
+
+<!-- 弹窗 -->
+<div class="ui mini modal">
+    <div class="header">
+            提示
+    </div>
+    <div class="content">
+        <p id="infos"></p>
+    </div>
+    <div class="actions">
+        <div class="ui red deny inverted button">
+            No
+            <i class="remove icon">
+            </i>
+        </div>
+        <div class="ui green ok inverted button">
+            OK
+            <i class="checkmark icon">
+            </i>
+        </div>
+    </div>
+</div>
+
+
+<!-- 查看详情 -->
+<div class="ui modal editform">
+    <div class="header">
+        查看详情
+    </div>
+    <div class="content">
+    <div class="ui form">
+        <h4 class="ui dividing header">博客详情</h4>
+        <div class="field">
+            <label>标题</label>
+            <div class="field">
+                <input type="text" class="blog title" readonly/>
+            </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>分类</label>
+                <input type="text" class="blog type" readonly/>
+            </div>
+            <div class="field">
+                <label>标签</label>
+                <div class="blog tags"></div>
+            </div>
+        </div>
+        <div class="field">
+            <label>描述</label>
+            <textarea rows="3" class="blog desc" readonly></textarea>
+        </div>
+        <div class="field">
+            <label>封面</label>
+            <img class="blog picture"/>
+        </div>
+        <div class="field">
+            <label>正文</label>
+            <textarea class="blog content" readonly></textarea>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>创建时间</label>
+                <input type="text" class="create time" readonly/>
+            </div>
+            <div class="field">
+                <label>更新时间</label>
+                <input type="text" class="update time" readonly/>
+           </div>
+        </div>
+    </div>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">取消</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script>
+
+// 删除按钮
+function deleted (id) {
+    $('.ui.mini.modal')
+        .modal({
+            onShow: function () {
+              $('#infos').text('确定要删除吗?')
+            },
+            onApprove: function () {
+                $.ajax({
+                    url: '/back/blog/'+id,
+                    type: 'delete',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.code === 1000) {
+                            location.reload()
+                        }
+                    }
+                })
+            },
+    })
+    .modal('show')
+}
+
+// 查看详情
+function detail (id) {
+    $('.ui.modal.editform')
+        .modal({
+            onShow: function () {
+                $.ajax({
+                    url: '/back/blog/'+id,
+                    type: 'get',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.code === 1000) {
+                            $('.blog.title').attr('value', res.data.blogTitle)
+                            $('.blog.type').attr('value', res.data.typeName)
+                            var html = ''
+                            for (let i = 0; i < res.data.tags.length; i++) {
+                                html += '<button class="ui button">' + res.data.tags[i].tagName + ' </button>'
+                            }
+                            $('.blog.tags').append(html)
+                            $('.blog.desc').text(res.data.blogDescription)
+                            $('.blog.content').text(res.data.blogContent)
+                            $('.blog.picture').attr('src', '/images/'+res.data.blogPicture)
+                            $('.create.time').attr('value', timeFormat(res.data.createTime))
+                            $('.update.time').attr('value', timeFormat(res.data.updateTime))
+                        }
+                    }
+                })
+            },
+            onHidden: function () {
+                // 清空模态框内容
+                $('.blog.tags').html("")
+            }
+        })
+    .modal('show')
+}
+
+// 日期格式化
+function timeFormat(time) {
+    var datetime = new Date(time);
+    var year = datetime.getFullYear();
+    var month = datetime.getMonth() + 1 < 10? '0' + (datetime.getMonth() + 1): datetime.getMonth() + 1;
+    var date = datetime.getDate() < 10? '0' + datetime.getDate(): datetime.getDate();
+    var hour = datetime.getHours() < 10? '0' + datetime.getHours(): datetime.getHours();
+    var min = datetime.getMinutes() < 10? '0' + datetime.getMinutes(): datetime.getMinutes();
+    var second = datetime.getSeconds() < 10? '0' + datetime.getSeconds(): datetime.getSeconds();
+    return year + '-' + month + '-' + date + ' ' + hour + ':' + min + ':' + second
+}
+
+function changePublish(blogId, blogPublish) {
+    $('.ui.mini.modal')
+    .modal({
+        onShow: function () {
+            $('#infos').text('确定要更改吗?')
+        },
+        onApprove: function () {
+            $.ajax({
+                url: '/back/change/'+blogId+'/'+blogPublish,
+                type: 'get',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 1000) {
+                        location.reload()
+                    }
+                }
+            })
+        },
+    })
+    .modal('show')
+}
+</script>
+
+</body>
+</html>

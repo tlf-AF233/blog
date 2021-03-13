@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <link rel="stylesheet" href="/static/css/animate.css">
+    <link rel="stylesheet" href="/static/css/mycss.css">
+</head>
+<body>
+
+<div th:replace="~{common::commonHeader}"></div>
+
+<div style="padding-top: 150px !important;">
+    <div class="ui container" th:fragment="cards">
+        <div class="ui stackable grid">
+            <div class="eleven wide column">
+                <div class="ui link two stackable cards">
+                    <a class="ui raised card m-card animated fadeIn"  th:each="blog:${blogInfo.get('pageInfo').list}" th:href="@{'/article/'+${blog.blogId}}">
+                        <div class="image" >
+                            <img th:src="'/images/' + ${blog.blogPicture}">
+                        </div>
+                        <div class="content">
+                            <div class="header" th:text="${blog.blogTitle}"> </div>
+                            <p class="description" th:text="${blog.blogDescription}"></p>
+
+                            <div class="ui mini horizontal link list">
+                            <div class="item">
+                                <img th:src="'/images/' + ${blog.userAvatar}" class="ui avatar image">
+                            </div>
+                            <div class="item">
+                                <h4 th:text="${blog.userNickname}">  </h4>
+                            </div>
+                            <div class="item">
+                                <i class="calendar alternate outline icon"></i>
+                                <span th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd')}"></span>
+                            </div>
+                            <div class="item">
+                                <i class="idea icon"></i>
+                                <span th:text="${blog.typeName}"></span>
+                            </div>
+                        </div>
+                        </div>
+                    </a>
+
+
+                </div>
+                <div style="position: relative" th:if="${#arrays.length(blogInfo.get('pageInfo').list) <= 0} ">
+                 <img class="ui large image" src="/images/empty.png" alt="">
+                    <h2 style="position: absolute; top: 110px; left: 410px; color: #8b8989;">啊噢，空空如也~</h2>
+                </div>
+                <br>
+
+                <div class="ui bottom raised segment">
+                    <div class="ui middle aligned three column grid">
+                        <div class="column">
+                            <a th:if="${#httpServletRequest.getParameter('blogTitle')}"
+                               th:href="@{'/blogs/' + ${blogInfo.get('pageInfo').prePage}(blogTitle=${#httpServletRequest.getParameter('blogTitle')})}" id="preButton" class="ui mini brown basic button">上一页</a>
+                            <a th:if="${#httpServletRequest.getParameter('typeId')}"
+                               th:href="@{'/blogs/' + ${blogInfo.get('pageInfo').prePage}(typeId=${blogInfo.get('types').get(0).typeId})}" id="preButton" class="ui mini brown basic button">上一页</a>
+                            <a th:unless="${#httpServletRequest.getParameter('typeId')!=null || #httpServletRequest.getParameter('blogTitle')!=null}" th:href="@{'/blogs/' + ${blogInfo.get('pageInfo').prePage}}" id="preButton" class="ui mini brown basic button">上一页</a>
+                        </div>
+                        <div class="center aligned column">
+                            第<span th:text="${blogInfo.get('pageInfo').pageNum}"></span>页
+                        </div>
+                        <div class="right aligned column">
+                            <a th:if="${#httpServletRequest.getParameter('blogTitle')}"
+                               th:href="@{'/blogs/' + ${blogInfo.get('pageInfo').nextPage}(blogTitle=${#httpServletRequest.getParameter('blogTitle')})}" id="nextButton" class="ui mini brown basic button">下一页</a>
+                            <a th:if="${#httpServletRequest.getParameter('typeId')}"
+                               th:href="@{'/blogs/' + ${blogInfo.get('pageInfo').nextPage}(typeId=${blogInfo.get('types').get(0).typeId})}" id="nextButton" class="ui mini brown basic button">下一页</a>
+                            <a th:unless="${#httpServletRequest.getParameter('typeId')!=null || #httpServletRequest.getParameter('blogTitle')!=null}" th:href="@{'/blogs/' + ${blogInfo.get('pageInfo').nextPage}}" id="nextButton" class="ui mini brown basic button">下一页</a>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+
+
+            <div class="five wide column">
+                <div class="ui top raised aligned segment">
+                    <div class="ui middle aligned column grid">
+                        <div class="column m-padded" id="tags" >
+                            <h3 class="ui center aligned header">
+                                <i class="idea icon"></i>
+                                分类
+                            </h3>
+                            <a id="type_a" style="margin: 10px" th:href="@{'/blogs/1'}" class="circular ui button">全部分类</a>
+                            <span th:each="type:${blogInfo.get('types')}">
+                            <a id="type_a" style="margin: 10px" th:href="@{'/blogs/1?typeId='+${type.typeId}}" class="circular ui button" th:text="${type.typeName}"></a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui top raised aligned segment">
+                    <div class="ui middle aligned column grid">
+                        <div class="column m-padded" id="tag" >
+                            <h3 class="ui center aligned header">
+                                <i class="tags icon"></i>
+                                标签
+                            </h3>
+                            <span th:each="tag:${blogInfo.get('tags')}">
+                            <a style="margin: 10px" href="#" class="ui tag  label" th:text="${tag.tagName}">java</a>
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<div th:replace="~{common::commonFooter}"></div>
+
+
+
+<!-- 弹窗 -->
+<div class="ui basic modal">
+    <div class="ui icon header">
+        <i id="tips" class="smile outline icon">
+
+        </i>
+    </div>
+    <div class="actions">
+        <div class="ui green ok inverted button">
+            <i class="checkmark icon">
+                OK
+            </i>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script>
+
+
+    // 标签随机颜色
+    $(document).ready(function () {
+        let tags_a = $('#tags a')
+        tags_a.each(function () {
+            const color = ['red', 'orange', 'yellow', 'olive', 'teal', 'blue', 'violet', 'pink', 'brown']
+            // Math.round() 四舍五入
+            const rand = Math.round(Math.random() * (color.length - 1))
+            $(this).addClass(color[rand])
+        })
+
+        let tag_a = $('#tag a')
+        tag_a.each(function () {
+            const color = ['red', 'orange', 'yellow', 'olive', 'teal', 'blue', 'violet', 'pink', 'brown']
+            const rand = Math.round(Math.random() * (color.length - 1))
+            $(this).addClass(color[rand])
+        })
+
+
+    })
+
+
+
+     $('#preButton').click(function () {
+        // 第一页提示
+        var firstPage = [[${blogInfo.get('pageInfo').hasPreviousPage}]]
+        if (firstPage === false) {
+            $('#preButton').addClass('disabled')
+            $('#tips').text("已经是第一页了噢~")
+            $('.ui.basic.modal').modal('show')
+            return false
+        }
+    })
+
+    $('#nextButton').click(function () {
+        // 最后一页提示
+        var lastPage = [[${blogInfo.get('pageInfo').hasNextPage}]]
+        if (lastPage === false) {
+            $('#nextButton').addClass('disabled')
+            $('#tips').text("后面没有了噢~")
+            $('.ui.basic.modal').modal('show')
+            return false
+        }
+    })
+
+
+    $('#type_a').click(function () {
+        var current_type = $('#type_a').text()
+        $('#currentType').text('当前所在'+current_type+'分类，点我返回首页噢').css('display', 'block')
+    })
+
+
+    function is () {
+        var url = window.location.href
+        if (url !== null || url !== '') {
+            const str = url.split('http://localhost/')
+            console.log(str)
+            const index = str[1].lastIndexOf('/')
+            console.log(index)
+            var a =  str.toString().substring(1, index + 1)
+            return a !== 'blogs'
+        }
+    }
+</script>
+
+</body>
+</html>

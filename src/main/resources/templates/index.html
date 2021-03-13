@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="device-width,initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <link rel="stylesheet" href="../static/css/mycss.css">
+    <link rel="stylesheet" href="../static/css/swiper.css">
+</head>
+<body style="background-image: url(/images/1.jpg); background-size: 100% 100%; background-repeat: no-repeat">
+
+<!-- 滚动顶部导航栏 -->
+<div th:replace="~{common::commonHeader}"></div>
+
+
+    <div class="ui container">
+        <div class="ui large secondary inverted pointing menu m-mobile-hide">
+            <div class="left item">
+                <h2 class="ui header item">AF's Blog</h2>
+            </div>
+            <div class="right item ">
+                <a href="/blogs/1" class="item">博客</a>
+                <a href="/message" class="item">留言</a>
+                <a href="/about" class="item">关于我</a>
+                <a th:if="${session.loginUser == null}" href="/login" class="item">登录</a>
+                <a href="/register" class="item">注册</a>
+            </div>
+        </div>
+        <div class="ui text" style="width: 100%">
+            <div id="m-dnav"></div>
+            <br>
+            <br>
+            <h1 class="ui inverted header" style="text-align: center">Welcome to my homepage!</h1>
+        </div>
+    </div>
+
+<div class="ui vertical stripe">
+    <section class="pc-banner">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide swiper-slide-center none-effect">
+                    <a href="#">
+                        <img src="http://118.31.34.27/images/index1.jpg">
+                    </a>
+
+                </div>
+                <div class="swiper-slide">
+                    <a href="#">
+                        <img src="http://118.31.34.27/images/index2.jpg">
+                    </a>
+
+                </div>
+                <div class="swiper-slide">
+                    <a href="#">
+                        <img src="http://118.31.34.27/images/index3.jpg">
+                    </a>
+
+                </div>
+                <div class="swiper-slide">
+                    <a href="#">
+                        <img src="http://118.31.34.27/images/index4.jpg">
+                    </a>
+
+                </div>
+                <div class="swiper-slide">
+                    <a href="#">
+                        <img src="http://118.31.34.27/images/index5.jpg">
+                    </a>
+
+                </div>
+            </div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+        </div>
+    </section>
+</div>
+
+
+<div>
+    <div class="ui container">
+        <div class="ui top raised aligned segment" style="border-radius: .5rem!important;">
+            <div>
+                <h2 class="ui center aligned header">欢迎来到我的站点</h2>
+                <p style="font-size: 1.4rem!important;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;路漫漫其修远兮，吾将上下而求索......
+                    <br>    ——来自一个热爱游戏的编程小白
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div th:replace="~{common::commonFooter}"></div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="../static/js/swiper.min.js"></script>
+<script src="../static/js/jquery.waypoints.min.js"></script>
+<script src="/static/js/myjs.js"></script>
+<script>
+
+    // 走马灯轮播效果
+    window.onload = function () {
+        let swiper = new Swiper('.swiper-container', {
+            speed: 2000,
+            autoplay: 3000, // 自动播放时间间隔
+            autoplayDisableOnInteraction: false,
+            loop: true, // 播完循环
+            spaceBetween: 30,
+            grabCursor: true,  // 开启抓手光标
+            centeredSlides: true,
+            slidesPerView: 2,
+            prevButton: '.swiper-button-prev',
+            nextButton: '.swiper-button-next',
+            breakpoints: {
+                668: {
+                    slidesPerView: 1,
+                }
+            },
+            onInit: function (swiper) {
+                swiper.slides[2].className = "swiper-slide swiper-slide-active";
+            }
+        });
+
+
+    }
+
+    // 顶部导航栏滚动监听
+    var waypoint = new Waypoint({
+        element: document.getElementById('m-dnav'),
+        handler: function (direction) {
+
+            if (direction === 'down') {
+                $('#m-nav').show().addClass('animated fadeInDownBig');
+            } else {
+                $('#m-nav').hide();
+            }
+        },
+    })
+
+
+</script>
+</html>

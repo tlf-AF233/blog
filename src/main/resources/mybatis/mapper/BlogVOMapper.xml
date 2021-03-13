@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.af.blog.mapper.BlogVOMapper">
+
+
+    <select id="selectAllBlogsToBack" resultType="com.af.blog.vo.BlogVO" resultMap="BlogsResultMap">
+        select b.blog_id, b.blog_title, ty.type_name, b.blog_publish, ta.tag_id, ta.tag_name
+        from
+            (t_blog b join t_type ty on b.blog_type = ty.type_id)
+            left join t_blog_tag bt on b.blog_id = bt.bt_blog_id
+            left join t_tag ta on bt.bt_tag_id = ta.tag_id
+        where b.deleted = 0
+        GROUP BY b.blog_id
+    </select>
+
+    <resultMap id="BlogsResultMap" type="com.af.blog.vo.BlogVO">
+        <id column="blog_id" property="blogId"/>
+        <result column="blog_title" property="blogTitle"/>
+        <result column="blog_description" property="blogDescription"/>
+        <result column="blog_content" property="blogContent"/>
+        <result column="type_name" property="typeName"/>
+        <result column="blog_picture" property="blogPicture"/>
+        <result column="blog_publish" property="blogPublish"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <collection property="tags" javaType="ArrayList" ofType="Tag" >
+                <id column="tag_id" property="tagId"/>
+            <result column="tag_name" property="tagName"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectBlogById" resultType="com.af.blog.vo.BlogVO" resultMap="BlogsResultMap">
+        select b.blog_id,  b.blog_title, b.blog_description, b.blog_content, ty.type_name, b.blog_picture, b.blog_publish, b.create_time, b.update_time, ta.tag_id, ta.tag_name
+        from
+            (t_blog b join t_type ty on b.blog_type = ty.type_id)
+            left join t_blog_tag bt on  bt.bt_blog_id = b.blog_id
+            left join t_tag ta on bt.bt_tag_id = ta.tag_id
+        where b.blog_id = #{blogId} AND b.deleted = 0
+    </select>
+
+    <select id="selectAuthor" resultType="User">
+        select u.user_id, u.user_name, u.user_avatar
+        from
+            t_user u, t_blog b
+        where
+            b.blog_id = #{blogId} AND b.blog_author = u.user_id AND b.deleted = 0
+    </select>
+
+    <select id="selectAllBlogsToShow" resultType="com.af.blog.vo.BlogVO">
+        select
+        b.blog_id, b.blog_title, u.user_nickname,u.user_avatar ,t.type_name, b.blog_picture, b.blog_description, b.create_time
+        from
+        myblog.t_blog b join t_user u on b.blog_author = u.user_id
+        <choose>
+            <when test="typeId != null">
+                join t_type t on t.type_id = #{typeId} AND b.blog_type = #{typeId}
+            </when>
+            <when test="blogTitle != null">
+                AND b.blog_title like concat('%',#{blogTitle}, '%')
+                join t_type t on b.blog_type = t.type_id
+            </when>
+            <otherwise>
+                join t_type t on b.blog_type = t.type_id
+            </otherwise>
+        </choose>
+        Where b.blog_publish = 1 AND b.deleted = 0
+        ORDER BY b.blog_id DESC
+    </select>
+
+    <update id="deleteBlogById" parameterType="int">
+        update t_blog SET deleted = 1, update_time = now() WHERE blog_id = #{blogId}
+    </update>
+
+
+</mapper>
