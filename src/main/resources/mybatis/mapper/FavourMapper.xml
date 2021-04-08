@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.af.blog.mapper.FavourMapper">
+
+    <select id="isFavoured" resultType="int">
+        select ifnull((select favour_status from myblog.t_favour where user_id = #{userId} AND favour_blog = #{blogId}), 0)
+    </select>
+
+    <insert id="createFavour">
+        insert into t_favour(favour_blog, user_id, favour_status, create_time, update_time)
+        values (#{blogId}, #{userId}, 1, now(), now())
+        ON DUPLICATE KEY UPDATE favour_status = 1, update_time = now()
+    </insert>
+
+    <update id="cancelFavour">
+        update t_favour set favour_status = 0, update_time = now()
+        where user_id = #{userId} AND favour_blog = #{blogId}
+    </update>
+</mapper>

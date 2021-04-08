@@ -75,7 +75,7 @@
                     <div class="comment" th:each="message : ${messages}">
 
                         <a class="avatar">
-                            <img th:src="'/images/' + ${message.userAvatar}">
+                            <img th:src="'http://img.afblog.love/' + ${message.userAvatar}">
                             <!--                                     th:src="@{${comment.ipAddress?.avatar}}">-->
                         </a>
                         <div class="content">
@@ -108,7 +108,7 @@
                         <div class="comments" th:if="${#arrays.length(message.childList)}>0">
                             <div class="comment" th:each="reply : ${message.childList}">
                                 <a class="avatar">
-                                    <img th:src="'/images/' + ${reply.userAvatar}">
+                                    <img th:src="'http://img.afblog.love/' + ${reply.userAvatar}">
                                     <!--                                             th:src="@{${reply.ipAddress?.avatar}}">-->
                                 </a>
                                 <div class="content">

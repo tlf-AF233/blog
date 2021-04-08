@@ -23,6 +23,7 @@
         <result column="type_name" property="typeName"/>
         <result column="blog_picture" property="blogPicture"/>
         <result column="blog_publish" property="blogPublish"/>
+        <result column="favour_num" property="favourNum"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <collection property="tags" javaType="ArrayList" ofType="Tag" >
@@ -32,9 +33,9 @@
     </resultMap>
 
     <select id="selectBlogById" resultType="com.af.blog.vo.BlogVO" resultMap="BlogsResultMap">
-        select b.blog_id,  b.blog_title, b.blog_description, b.blog_content, ty.type_name, b.blog_picture, b.blog_publish, b.create_time, b.update_time, ta.tag_id, ta.tag_name
+        select b.blog_id,  b.blog_title, b.blog_description, b.blog_content, ty.type_name, b.blog_picture, b.blog_publish, b.create_time, b.favour_num, b.update_time, ta.tag_id, ta.tag_name
         from
-            (t_blog b join t_type ty on b.blog_type = ty.type_id)
+            (myblog.t_blog b join t_type ty on b.blog_type = ty.type_id)
             left join t_blog_tag bt on  bt.bt_blog_id = b.blog_id
             left join t_tag ta on bt.bt_tag_id = ta.tag_id
         where b.blog_id = #{blogId} AND b.deleted = 0
@@ -50,7 +51,7 @@
 
     <select id="selectAllBlogsToShow" resultType="com.af.blog.vo.BlogVO">
         select
-        b.blog_id, b.blog_title, u.user_nickname,u.user_avatar ,t.type_name, b.blog_picture, b.blog_description, b.create_time
+        b.blog_id, b.blog_title, u.user_nickname,u.user_avatar ,t.type_name, b.blog_picture, b.blog_description, b.create_time, b.favour_num
         from
         myblog.t_blog b join t_user u on b.blog_author = u.user_id
         <choose>
@@ -73,5 +74,11 @@
         update t_blog SET deleted = 1, update_time = now() WHERE blog_id = #{blogId}
     </update>
 
+    <update id="favourBlog" parameterType="int">
+        update t_blog SET favour_num = favour_num + 1 WHERE blog_id = #{blogId}
+    </update>
 
+    <update id="unFavourBlog" parameterType="int">
+        update t_blog SET favour_num = if(favour_num = 1, 0, favour_num - 1) WHERE blog_id = #{blogId}
+    </update>
 </mapper>

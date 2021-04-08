@@ -34,7 +34,7 @@
                 <th>操作</th>
             </tr>
             <tr th:each="user:${users.list}">
-                <td><img th:src="'/images/'+ ${user.userAvatar}" class="ui mini rounded image" alt=""></td>
+                <td><img th:src="'http://img.afblog.love/'+ ${user.userAvatar}" class="ui mini rounded image" alt=""></td>
                 <td th:text="${user.userNickname}"></td>
                 <td th:if="${user.userStatus}==1" class="positive">
                     <button class="ui positive basic button" th:onclick="'javascript:changeStatus('+${user.userId}+' ,1)'" >已认证</button>

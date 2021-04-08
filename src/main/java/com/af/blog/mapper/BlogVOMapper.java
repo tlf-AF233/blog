@@ -41,5 +41,17 @@ public interface BlogVOMapper {
      */
     List<BlogVO> selectAllBlogsToShow(@Param("typeId") Integer typeId, @Param("blogTitle") String blogTitle);
 
+    /**
+     * 点赞博客
+     * @param blogId
+     * @return
+     */
+    boolean favourBlog(@Param("blogId") Integer blogId);
 
+    /**
+     * 取消点赞
+     * @param blogId
+     * @return
+     */
+    boolean unFavourBlog(@Param("blogId") Integer blogId);
 }

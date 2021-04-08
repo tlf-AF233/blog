@@ -160,7 +160,7 @@
 
                             <!-- 修改头像页 -->
                             <div class="ui tab raised segment" data-tab="fifth">
-                                <img style="width: 200px;height: 200px;border-radius: 200px" th:src="'/images/' + ${user.userAvatar}" alt="">
+                                <img style="width: 200px;height: 200px;border-radius: 200px" th:src="'http://img.afblog.love/' + ${user.userAvatar}" alt="">
                                 <form th:if="${user.userStatus} != 0" id="avatar-form"  method="post" class="ui form" enctype="multipart/form-data">
                                     <input type="hidden" name="userId" th:value="${user.userId}" >
                                     <input id="upload-file" type="file" name="file" style="border: none">

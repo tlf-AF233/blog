@@ -127,7 +127,7 @@
                 <input type="text" class="blog title" readonly/>
             </div>
         </div>
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
                 <label>分类</label>
                 <input type="text" class="blog type" readonly/>
@@ -136,6 +136,10 @@
                 <label>标签</label>
                 <div class="blog tags"></div>
             </div>
+            <div class="field">
+                <label>点赞</label>
+                <input type="text" class="blog favour" readonly/>
+            </div>
         </div>
         <div class="field">
             <label>描述</label>
@@ -143,7 +147,7 @@
         </div>
         <div class="field">
             <label>封面</label>
-            <img class="blog picture"/>
+            <img style="height: 80%; width: 80%" class="blog picture"/>
         </div>
         <div class="field">
             <label>正文</label>
@@ -212,9 +216,10 @@ function detail (id) {
                                 html += '<button class="ui button">' + res.data.tags[i].tagName + ' </button>'
                             }
                             $('.blog.tags').append(html)
+                            $('.blog.favour').attr('value', res.data.favourNum)
                             $('.blog.desc').text(res.data.blogDescription)
                             $('.blog.content').text(res.data.blogContent)
-                            $('.blog.picture').attr('src', '/images/'+res.data.blogPicture)
+                            $('.blog.picture').attr('src', 'http://img.afblog.love/'+res.data.blogPicture)
                             $('.create.time').attr('value', timeFormat(res.data.createTime))
                             $('.update.time').attr('value', timeFormat(res.data.updateTime))
                         }

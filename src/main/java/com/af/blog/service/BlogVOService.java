@@ -20,4 +20,8 @@ public interface BlogVOService {
     User selectAuthor(Integer blogId);
 
     boolean deleteBlogById(Integer blogId);
+
+    boolean favourBlog(Integer blogId);
+
+    boolean unFavourBlog(Integer blogId);
 }

@@ -22,22 +22,22 @@
     <div class="ui container">
         <!--文章的图片-->
         <div class="ui top attached segment">
-            <img th:src="'/images/' + ${blog.blogPicture}" alt="" class="ui fluid rounded image">
+            <img th:src="'http://img.afblog.love/' + ${blog.blogPicture}" alt="" class="ui fluid rounded image">
         </div>
         <!--头部的文章信息部分-->
         <div class="ui attached segment">
             <h2 class="ui center aligned header" th:text="${blog.blogTitle}"></h2>
             <div class="ui stackable middle aligned two column  grid">
                 <div class="row">
-                    <div class="column">
-                        <div class="ui horizontal link list">
-                            <div class="middle aligned item">
-                                <img th:src="'/images/' + ${author.userAvatar}"  alt=""
+
+                        <div class="ui horizontal link list m-center">
+                            <div class="middle aligned item" style="left: 100%">
+                                <img th:src="'http://img.afblog.love/' + ${author.userAvatar}"  alt=""
                                      class="ui avatar image">
                                 <div class="content" th:text="${author.userNickname}"></div>
                             </div>
                         </div>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -62,6 +62,23 @@
                    class="ui  tag label" style="margin: 10px">tags</button>
                 <h4 class="ui header" style="text-align: right">发表时间：<span th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd HH:mm')}"></span></h4>
                 <h4 class="ui header" style="text-align: right">上次更新：<span th:text="${#dates.format(blog.updateTime, 'yyyy-MM-dd HH:mm')}"></span></h4>
+                <!--点赞-->
+                <div id="favour-container">
+                    <div th:if="${favour}" th:fragment="favour-item" class="ui labeled button m-center" tabindex="0">
+                     <div class="ui red favour button" th:onclick="'javascript:favour('+${blog.blogId}+', 0)'">
+                        <i class="heart icon"></i> 已经点过赞了噢~
+                    </div>
+                    <div class="ui basic red left pointing label" th:text="${blog.favourNum}">
+                     </div>
+                    </div>
+                    <div th:unless="${favour}" th:fragment="favour-item" class="ui labeled button m-center" tabindex="0">
+                        <div class="ui favour button" th:onclick="'javascript:favour('+${blog.blogId}+', 1)'">
+                            <i class="heart icon"></i> 喜欢就点个赞吧~
+                        </div>
+                        <div class="ui basic left pointing label" th:text="${blog.favourNum}">
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -75,7 +92,7 @@
                         <div class="comment" th:each="comment : ${comments}">
 
                             <a class="avatar">
-                                <img th:src="'/images/' + ${comment.userAvatar}">
+                                <img th:src="'http://img.afblog.love/' + ${comment.userAvatar}">
                                 <!--                                     th:src="@{${comment.ipAddress?.avatar}}">-->
                             </a>
                             <div class="content">
@@ -109,7 +126,7 @@
                             <div class="comments" th:if="${#arrays.length(comment.childList)}>0">
                                 <div class="comment" th:each="reply : ${comment.childList}">
                                     <a class="avatar">
-                                        <img th:src="'/images/' + ${reply.userAvatar}">
+                                        <img th:src="'http://img.afblog.love/' + ${reply.userAvatar}">
                                         <!--                                             th:src="@{${reply.ipAddress?.avatar}}">-->
                                     </a>
                                     <div class="content">
@@ -221,7 +238,7 @@
             <i class="remove icon">
             </i>
         </div>
-        <button id="login-btn" class="ui blue inverted button">
+        <button class="ui blue inverted login btn button">
             不，去登录
             <i class="arrow circle right icon">
             </i>
@@ -231,6 +248,28 @@
             <i class="checkmark icon">
             </i>
         </div>
+    </div>
+</div>
+
+<!-- 弹窗 -->
+<div class="ui small favour modal">
+    <div class="header">
+        提示
+    </div>
+    <div class="content">
+        <p>请登录再点赞~</p>
+    </div>
+    <div class="actions">
+        <div class="ui cancel  button">
+            取消
+            <i class="remove icon">
+            </i>
+        </div>
+        <button class="ui blue inverted login btn button">
+            去登录
+            <i class="arrow circle right icon">
+            </i>
+        </button>
     </div>
 </div>
 
@@ -295,6 +334,21 @@
         }
     })
 
+    // 点赞功能
+    function favour(blogId, flag) {
+        var user = '[[${session.loginUser}]]';
+        if (user == 'null') {
+            $('.small.favour.modal').modal('show');
+        } else {
+            $('#favour-container').load(/*[[@{/favour}]]*/"", {
+                "blogId": blogId,
+                "flag": flag,
+            }, function () {
+                $(window).scrollTo($('#favour-container'), 500)
+            })
+         }
+    }
+
     // 提交评论
     $('#commentpost-btn').click(function () {
         var validated = $('.ui.form').form('validate form');
@@ -351,7 +405,7 @@
         $(window).scrollTo($('#comment-form'), 500)
     }
 
-    $('#login-btn').click(function () {
+    $('.login.btn').click(function () {
         location.href = '/login';
     })
 

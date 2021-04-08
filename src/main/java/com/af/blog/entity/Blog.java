@@ -68,7 +68,4 @@ public class Blog {
      */
     private Date updateTime;
 
-    /**
-     * 逻辑删除
-     */
 }

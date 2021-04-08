@@ -49,7 +49,7 @@
             </div>
             <div th:unless="${session.loginUser} == null" class="right m-item item m-mobile-hide">
                 <div class="ui inline dropdown">
-                    <div class="text" ><img th:src="'/images/'+${session.loginUser.userAvatar}"  class="ui avatar image"><span th:text="${session.loginUser.userNickname}"></span></div>
+                    <div class="text" ><img th:src="'http://img.afblog.love/'+${session.loginUser.userAvatar}"  class="ui avatar image"><span th:text="${session.loginUser.userNickname}"></span></div>
                     <i class="dropdown icon"></i>
                     <div class="menu">
                         <a href="/space" id="detail-btn" class="item"><i class="settings icon"></i>个人中心</a>
@@ -112,6 +112,7 @@
         </div>
         <div class="ui inverted section divider"></div>
         <p class="m-text-thin m-text-spaced m-opacity-tiny">Copyright © 2020 - 2020 AF Designed by AF</p>
+        <a class="m-text-thin m-text-spaced m-opacity-tiny" href="https://beian.miit.gov.cn/" target="_blank">蜀ICP备2021005441号-1</a>
     </div>
 </footer>
 

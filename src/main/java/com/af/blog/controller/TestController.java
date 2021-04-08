@@ -5,11 +5,17 @@ import com.af.blog.service.BlogService;
 import com.af.blog.service.CommentService;
 import com.af.blog.service.TagService;
 import com.af.blog.service.TypeService;
+import com.af.blog.utils.FileUtils;
+import com.af.blog.utils.ResultVoUtils;
+import com.af.blog.vo.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class TestController {
@@ -44,5 +50,16 @@ public class TestController {
         model.addAttribute("typeNum", typeService.selectCounts());
         model.addAttribute("blogNum", blogService.selectCounts());
         return "aboutme";
+    }
+
+    @PostMapping("/upload")
+    @ResponseBody
+    public Map<String, Object> uploadMarkdownImg(@RequestParam(value = "editormd-image-file", required = false) MultipartFile attach) {
+        String picture = FileUtils.upload(attach, "picture");
+        Map<String, Object> map = new HashMap<>();
+        map.put("url", "http://img.afblog.love/" + picture);
+        map.put("success", 1);
+        map.put("message", "上传成功");
+        return map;
     }
 }

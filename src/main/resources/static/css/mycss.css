@@ -4,7 +4,13 @@ body {
     /*background-repeat: no-repeat !important;*/
     /*background-position: center 0 !important;*/
     /*-webkit-background-size: cover !important;*/
-    background-image: url(/images/doodles.png);
+    background-image: url(http://img.afblog.love/doodles.png);
+}
+
+.m-center {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .m-footer {

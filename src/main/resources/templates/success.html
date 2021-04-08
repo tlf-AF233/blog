@@ -20,6 +20,10 @@
         <div class="ui success large message" style="height: 300px">
             <h2 th:text="${session.loginUser.userNickname}"></h2>
             <p>欢迎回来~</p>
+            <p style="line-height: 30px">博客更新日志v0.1
+               <br>- 增加了博客的点赞功能，现在可以进行点赞了。
+               <br>- 修复了一些错误。
+            </p>
             <p th:if="${session.loginUser.userStatus == 0}">邮箱还没有激活噢~请前往个人中心激活邮箱~</p>
         </div>
 

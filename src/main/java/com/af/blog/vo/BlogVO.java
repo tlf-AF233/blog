@@ -89,6 +89,11 @@ public class BlogVO {
     private List<Tag> tags;
 
     /**
+     * 点赞量
+     */
+    private long favourNum;
+
+    /**
      * 逻辑删除
      */
     private Integer deleted;

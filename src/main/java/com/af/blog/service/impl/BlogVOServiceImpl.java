@@ -51,4 +51,14 @@ public class BlogVOServiceImpl implements BlogVOService {
     public User selectAuthor(Integer blogId) {
         return blogVOMapper.selectAuthor(blogId);
     }
+
+    @Override
+    public boolean favourBlog(Integer blogId) {
+        return blogVOMapper.favourBlog(blogId);
+    }
+
+    @Override
+    public boolean unFavourBlog(Integer blogId) {
+        return blogVOMapper.unFavourBlog(blogId);
+    }
 }
