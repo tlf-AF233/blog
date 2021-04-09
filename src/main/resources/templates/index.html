@@ -12,9 +12,8 @@
 <body style="background-image: url(http://img.afblog.love/1.jpg); background-size: 100% 100%; background-repeat: no-repeat">
 
 <!-- 滚动顶部导航栏 -->
-<div th:replace="~{common::commonHeader}"></div>
 
-
+<div id="index-nav" class="m-mobile-show" th:insert="~{common::commonHeader}"></div>
     <div class="ui container">
         <div class="ui large secondary inverted pointing menu m-mobile-hide">
             <div class="left item">
@@ -136,9 +135,10 @@
         handler: function (direction) {
 
             if (direction === 'down') {
-                $('#m-nav').show().addClass('animated fadeInDownBig');
+                $('#index-nav').removeClass('m-mobile-show');
+                $('#m-nav').addClass('animated fadeInDownBig');
             } else {
-                $('#m-nav').hide();
+                $('#index-nav').addClass('m-mobile-show');
             }
         },
     })
