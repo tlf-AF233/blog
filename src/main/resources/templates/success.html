@@ -19,7 +19,7 @@
     <div class="ui very padded raised segment" style="height: 500px">
         <div class="ui success large message" style="height: 300px">
             <h2 th:text="${session.loginUser.userNickname}"></h2>
-            <p>欢迎回来~</p>
+            <p id="greets"></p>
             <p style="line-height: 30px">博客更新日志v0.1
                <br>- 增加了博客的点赞功能，现在可以进行点赞了。
                <br>- 修复了一些错误。
@@ -51,6 +51,25 @@
 <script src="/static/js/myjs.js"></script>
 <script>
 
+    // 根据时间对用户进行问候
+    let time = new Date();
+    let hour = time.getHours();
+    let greets = $('#greets');
+    if (hour <= 4) {
+        greets.text("是什么让你熬夜到现在呢？总之，凌晨时分总是让人产生遐想，不如快去休息吧~");
+    } else if (hour <= 10) {
+        greets.text("早上好呀，一日之计在于晨，希望今天也是元气满满的一天~");
+    } else if (hour <= 13) {
+        greets.text("又到了吃午饭的时候呢，停下手头的工作，先去饱餐一顿吧~");
+    } else if (hour <= 17) {
+        greets.text("下午好呀，继续保持对生活的活力哟~");
+    } else if (hour <= 20) {
+        greets.text("晚饭吃的什么呢？还没吃的话快去吃晚饭吧~");
+    } else if (hour <= 22) {
+        greets.text("一天的忙碌生活终于结束了，给自己一点时间放松吧~");
+    } else {
+        greets.text("时候不早了，快准备睡觉了噢~");
+    }
 
 </script>
 </body>

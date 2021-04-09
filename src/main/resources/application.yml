@@ -6,12 +6,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     username: root
-    password: *****
+    password: 741236985
     url: jdbc:mysql://localhost:3306/myblog?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     druid:
       stat-view-servlet:
-        login-password: *****
-        login-username: *****
+        login-password: 741236985
+        login-username: tlf246169
   mvc:
     static-path-pattern: /static/**
   thymeleaf:
