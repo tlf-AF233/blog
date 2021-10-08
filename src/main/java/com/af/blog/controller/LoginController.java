@@ -125,7 +125,7 @@ public class LoginController {
                     .userId(userId)
                     .build();
             userService.checkEmail(user);
-            String text = "<h2>尊敬的用户" + userNickname + "，您好</h2><p>该邮件为系统自动发送，请勿回复。<a href='http://118.31.34.27/active?user_id="+userId+"&active_code="+active_code+"&nickname="+userNickname+"'>点击此链接激活邮箱</a>，祝您生活愉快！</p>";
+            String text = "<h2>尊敬的用户" + userNickname + "，您好</h2><p>该邮件为系统自动发送，请勿回复。<a href='http://www.afblog.love/active?user_id="+userId+"&active_code="+active_code+"&nickname="+userNickname+"'>点击此链接激活邮箱</a>，祝您生活愉快！</p>";
             mailService.sendEmail(text, email);
             return ResultVoUtils.success();
         }

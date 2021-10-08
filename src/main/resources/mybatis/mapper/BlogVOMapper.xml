@@ -4,17 +4,6 @@
 
 <mapper namespace="com.af.blog.mapper.BlogVOMapper">
 
-
-    <select id="selectAllBlogsToBack" resultType="com.af.blog.vo.BlogVO" resultMap="BlogsResultMap">
-        select b.blog_id, b.blog_title, ty.type_name, b.blog_publish, ta.tag_id, ta.tag_name
-        from
-            (t_blog b join t_type ty on b.blog_type = ty.type_id)
-            left join t_blog_tag bt on b.blog_id = bt.bt_blog_id
-            left join t_tag ta on bt.bt_tag_id = ta.tag_id
-        where b.deleted = 0
-        GROUP BY b.blog_id
-    </select>
-
     <resultMap id="BlogsResultMap" type="com.af.blog.vo.BlogVO">
         <id column="blog_id" property="blogId"/>
         <result column="blog_title" property="blogTitle"/>
@@ -26,18 +15,32 @@
         <result column="favour_num" property="favourNum"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
-        <collection property="tags" javaType="ArrayList" ofType="Tag" >
-                <id column="tag_id" property="tagId"/>
+        <collection property="tags" javaType="ArrayList" ofType="Tag" select="selectTags" column="blog_id">
+            <id column="tag_id" property="tagId"/>
             <result column="tag_name" property="tagName"/>
         </collection>
     </resultMap>
 
-    <select id="selectBlogById" resultType="com.af.blog.vo.BlogVO" resultMap="BlogsResultMap">
-        select b.blog_id,  b.blog_title, b.blog_description, b.blog_content, ty.type_name, b.blog_picture, b.blog_publish, b.create_time, b.favour_num, b.update_time, ta.tag_id, ta.tag_name
+
+    <select id="selectAllBlogsToBack" resultType="com.af.blog.vo.BlogVO" resultMap="BlogsResultMap">
+        select b.blog_id, b.blog_title, ty.type_name, b.blog_publish
         from
-            (myblog.t_blog b join t_type ty on b.blog_type = ty.type_id)
-            left join t_blog_tag bt on  bt.bt_blog_id = b.blog_id
-            left join t_tag ta on bt.bt_tag_id = ta.tag_id
+            t_blog b join t_type ty on b.blog_type = ty.type_id
+        where b.deleted = 0
+
+    </select>
+
+    <select id="selectTags" resultType="com.af.blog.entity.Tag">
+        select ta.tag_id, ta.tag_name
+        from t_blog b left join t_blog_tag bt on b.blog_id = bt.bt_blog_id
+            left join t_tag ta on ta.tag_id = bt.bt_tag_id
+        where b.blog_id = #{blog_id}
+    </select>
+
+    <select id="selectBlogById" resultType="com.af.blog.vo.BlogVO" resultMap="BlogsResultMap">
+        select b.blog_id,  b.blog_title, b.blog_description, b.blog_content, ty.type_name, b.blog_picture, b.blog_publish, b.create_time, b.favour_num, b.update_time
+        from
+            myblog.t_blog b join t_type ty on b.blog_type = ty.type_id
         where b.blog_id = #{blogId} AND b.deleted = 0
     </select>
 

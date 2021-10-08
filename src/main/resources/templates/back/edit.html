@@ -55,7 +55,7 @@
                         <label class="ui compact teal basic label">标签</label>
                         <div class="ui fluid selection multiple dropdown">
                             <!--需要一个隐藏域来保存写的博客选中的所有tags的id-->
-                            <input type="hidden" name="tagIds">
+                            <input type="hidden" name="tagIds" th:each="tag : ${blogs.tags}" th:value="${tag.tagName}">
                             <i class="dropdown icon"></i>
                             <div class="default text">标签</div>
                             <div class="menu">
@@ -257,10 +257,10 @@
 
     function strArrToInt(str) {
         // 标签从字符串转换为整型数组
-
         let intArray = []
-        if (str == null)
+        if (str == null || str === '') {
             return null
+        }
         str.split(",").forEach(item => {
             intArray.push(+item)
         })

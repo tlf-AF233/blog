@@ -37,7 +37,7 @@
                 <td th:text="${blog.blogTitle}"></td>
                 <td th:text="${blog.typeName}"></td>
                 <td>
-                    <button class="ui button" th:each="tag:${blog.tags}" th:text="${tag.tagName}"></button>
+                    <button  class="ui  tag label" style="margin: 10px" th:each="tag:${blog.tags}" th:text="${tag.tagName}"></button>
                 </td>
                 <td th:if="${blog.blogPublish}==1" class="positive">
                     <button class="ui positive basic button" th:onclick="'javascript:changePublish('+${blog.blogId}+' ,1)'" >发布</button>

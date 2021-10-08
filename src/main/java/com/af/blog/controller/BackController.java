@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 后台控制器
@@ -262,8 +264,10 @@ public class BackController {
                         .blogId(blogId)
                         .build();
         blogService.updateBlog(blog, blogPicture);
-        blogTagService.deleteBlogTag(blogId);
-        blogTagService.createBlogTag(blogId, tags);
+        if (tags != null) {
+            blogTagService.deleteBlogTag(blogId);
+            blogTagService.createBlogTag(blogId, tags);
+        }
         return ResultVoUtils.success();
     }
 
