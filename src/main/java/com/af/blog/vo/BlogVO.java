@@ -94,6 +94,11 @@ public class BlogVO {
     private long favourNum;
 
     /**
+     * 访问量
+     */
+    private long view;
+
+    /**
      * 逻辑删除
      */
     private Integer deleted;

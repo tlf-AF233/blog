@@ -11,6 +11,8 @@ public interface BlogService {
 
     boolean updateBlog(Blog blog, MultipartFile file);
 
+    boolean updateView(String ipAddress, Integer blogId);
+
     boolean changeBlogPublish(Integer blogId, Integer blogPublish);
 
     Integer selectCounts();

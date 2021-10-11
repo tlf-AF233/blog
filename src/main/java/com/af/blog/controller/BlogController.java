@@ -6,6 +6,7 @@ import com.af.blog.entity.Blog;
 import com.af.blog.entity.Tag;
 import com.af.blog.entity.User;
 import com.af.blog.service.*;
+import com.af.blog.utils.IpUtils;
 import com.af.blog.utils.ResultVoUtils;
 import com.af.blog.vo.BlogVO;
 import com.af.blog.vo.ResultVO;
@@ -13,6 +14,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -82,7 +87,9 @@ public class BlogController {
      * @return
      */
     @GetMapping("/article/{blogId}")
-    public String blogDetail(@PathVariable("blogId") Integer blogId, Model model) {
+    public String blogDetail(@PathVariable("blogId") Integer blogId, Model model, HttpServletRequest request) {
+        String ipAddress = IpUtils.getIpAddress(request);
+        blogService.updateView(ipAddress, blogId);
         model.addAttribute("blog", blogVOService.getAndConvert(blogId));
         model.addAttribute("author", blogVOService.selectAuthor(blogId));
         model.addAttribute("comments", commentService.selectCommentByBlogId(blogId));

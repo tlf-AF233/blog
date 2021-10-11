@@ -32,6 +32,11 @@
         where blog_id = #{blogId}
     </update>
 
+    <update id="updateView">
+        update t_blog
+        set view = view + 1
+        where blog_id = #{blogId}
+    </update>
     <update id="changeBlogPublish">
         update t_blog
         <set>

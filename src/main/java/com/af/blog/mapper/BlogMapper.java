@@ -25,6 +25,8 @@ public interface BlogMapper {
       */
      boolean updateBlog(Blog blog);
 
+     boolean updateView(@Param("blogId") Integer blogId);
+
      boolean changeBlogPublish(@Param("blogId") Integer blogId, @Param("blogPublish") Integer blogPublish);
 
      Integer selectCounts();

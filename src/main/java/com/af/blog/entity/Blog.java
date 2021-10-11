@@ -59,6 +59,11 @@ public class Blog {
     private String blogDescription;
 
     /**
+     * 访问量
+     */
+    private Long view;
+
+    /**
      * 创建时间
      */
     private Date createTime;
